@@ -5,13 +5,13 @@ import { getErrorMessage } from "../../errors/index.js";
 /**
  * @description User account creation controller
  */
-export const createUserAccount = async (req, res) => {
+export const createUserOrLoginAccount = async (req, res) => {
   try {
     const userReq = req.body;
-    const user = await AuthService.createUserAccountService(userReq);
+    const user = await AuthService.createUserOrLoginAccountService(userReq);
     res.status(201).json({
       success: true,
-      message: "Account created",
+      message: "Account log in success",
       ...user
     });
     return;
@@ -25,29 +25,6 @@ export const createUserAccount = async (req, res) => {
   }
 };
 
-/**
- * @description User login controller
- */
-export const loginUserAccount = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await AuthService.loginUserAccountService(email, password);
-    res.status(200).json({
-      success: true,
-      message: "Login Successful",
-      ...user,
-      token: user.token,
-    });
-    return;
-  } catch (error) {
-    console.log(error);
-    const result = getErrorMessage(error);
-    return res.status(result.code).json({
-      success: false,
-      error: result.message,
-    });
-  }
-};
 
 /**
  * @description Otp verification controller.

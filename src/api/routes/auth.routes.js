@@ -1,32 +1,25 @@
 import { Router } from "express";
 import {
   changePassword,
-  createUserAccount,
+  createUserOrLoginAccount,
   forgotPassword,
-  loginUserAccount,
+  // loginUserAccount,
   verifyUserOtp,
 } from "../controllers/auth.controller.js";
 import { validateRequest } from "../utils/api-utils.js";
 import {
   changePasswordValidator,
-  createUserAccountValidator,
+  createUserOrLoginAccountValidator,
   forgotPasswordValidator,
-  loginUserAccountValidator,
   OTPVerificationValidator,
 } from "../middlewares/validators/auth.validators.js";
 
 const routes = Router();
 
 routes.post(
-  "/create",
-  validateRequest(createUserAccountValidator),
-  createUserAccount
-);
-//
-routes.post(
-  "/login",
-  validateRequest(loginUserAccountValidator),
-  loginUserAccount
+  "/onboard",
+  validateRequest(createUserOrLoginAccountValidator),
+  createUserOrLoginAccount
 );
 
 //

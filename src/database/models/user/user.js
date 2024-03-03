@@ -23,6 +23,10 @@ const userSchema = new Schema(
     password: {
       type: String,
     },
+    username: {
+      type: String,
+      default :null,
+    },
     isVerified: {
       type: Boolean,
       default : false,
@@ -32,6 +36,14 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.statics.findOneOrCreate = async function findOneOrCreate(filter, doc) {
+  let result = await this.findOne(filter);
+  if (!result) {
+    result = await this.create(doc);
+  }
+  return result;
+};
 
 const User = model("Users", userSchema);
 

@@ -7,7 +7,6 @@ import {
   generateAndSendOTP,
 } from "../../utils/auth.util.js";
 import {
-  ErrEmailAlreadyExists,
   ErrUserNotFound,
   ErrInvalidPassword,
   ErrInvalidOTP,
@@ -18,63 +17,52 @@ import {
 import { generateToken } from "../security/token.service.js";
 
 /**
- * @description  This method creates a User Account
+ * @description  This method creates or login a User Account
  * @param (userReq) i.e user attributes object
  * @returns user object
  */
-const createUserAccountService = async (userReq) => {
+const createUserOrLoginAccountService = async (userReq) => {
   const { email, password } = userReq;
-
-  const user = await User.findOne({ email: email });
-
-  if (user) throw ErrEmailAlreadyExists;
 
   const hp = await hashPassword(password);
 
-  const otp = generateOTP();
-
-  const newUser = await User.create({
-    ...userReq,
-    password: hp,
-    otpCode: otp,
+  let user = await User.findOne({
+    email: { $regex: new RegExp(email, "i") },
   });
 
+  if (user){
+    const isValidPassword = await comparePassword(password, user.password);
+    
+    if(!isValidPassword) throw ErrInvalidPassword;
+
+  }
+  else{
+    user = await User.create({
+      email,
+      password :hp,
+    })
+  }
+
+   
+  const otp = generateOTP();
+
   const payload = {
-    _id : newUser._id,
-    uuid: newUser.uuid,
-    isVerified : newUser.isVerified,
+    _id: user._id,
+    uuid: user.uuid,
+    isVerified: user.isVerified,
   };
+
+  await OTP.findOneAndReplace(
+    { user_uuid : user.uuid },
+    { user_uuid :user.uuid, otpCode : otp },
+    { upsert: true, new: true }
+  );
 
   await generateAndSendOTP({ email, otp, flag: "verify" });
 
   const token = await generateToken(payload);
 
-  return { user: newUser.uuid, token };
-};
-
-/**
- * @description  This method logs in an already registered User Account
- * @param (email, password) : string
- * @returns   user & token object
- */
-const loginUserAccountService = async (email, password) => {
-  const findUser = await User.findOne({
-    email: { $regex: new RegExp(email, "i") },
-  });
-  if (!findUser) throw ErrUserNotFound;
-
-  const passwordCompare = await comparePassword(password, findUser.password);
-  if (!passwordCompare) throw ErrInvalidPassword;
-
-  const payload = {
-    _id : findUser._id,
-    uuid: findUser.uuid,
-    isVerified : findUser.isVerified,
-  };
-
-  const token = await generateToken(payload);
-
-  return { findUser, token };
+  return { data: user, token };
 };
 
 /**
@@ -120,7 +108,7 @@ const forgotPasswordService = async (email) => {
   const otp = generateOTP();
 
   await OTP.create({
-    user_uuid: user.uuid,
+    user_id: user.uuid,
     otpCode: otp,
   });
   await generateAndSendOTP({ email, otp, flag: "reset" });
@@ -170,8 +158,8 @@ const socialAuthLoginService = async (userObj) => {
 };
 
 export const AuthService = {
-  createUserAccountService,
-  loginUserAccountService,
+  createUserOrLoginAccountService,
+  // loginUserAccountService,
   verifyUserOtpService,
   forgotPasswordService,
   changePasswordService,

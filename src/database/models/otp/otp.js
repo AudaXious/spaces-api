@@ -8,10 +8,8 @@ const otpSchema = new Schema({
     default: () => uuidV4(),
     unique: true,
   },
-  user_id: {
+  user_uuid: {
     type: String,
-    ref: "Users",
-    required: true,
     unique : true,
   },
   otpCode: {
