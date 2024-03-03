@@ -46,11 +46,11 @@ const createUserOrLoginAccountService = async (userReq) => {
    
   const otp = generateOTP();
 
-  const payload = {
-    _id: user._id,
-    uuid: user.uuid,
-    isVerified: user.isVerified,
-  };
+  // const payload = {
+  //   _id: user._id,
+  //   uuid: user.uuid,
+  //   isVerified: user.isVerified,
+  // };
 
   await OTP.findOneAndReplace(
     { user_uuid : user.uuid },
@@ -60,9 +60,9 @@ const createUserOrLoginAccountService = async (userReq) => {
 
   await generateAndSendOTP({ email, otp, flag: "verify" });
 
-  const token = await generateToken(payload);
+  // const token = await generateToken(payload);
 
-  return { data: user, token };
+  return user;
 };
 
 /**
@@ -71,12 +71,14 @@ const createUserOrLoginAccountService = async (userReq) => {
  * @returns   true
  */
 const verifyUserOtpService = async (otp, email, type) => {
-  const user = await User.findOne({ email: email });
-  if (!user) throw ErrUserNotFound;
+  if(type !== 'reset' && type !== 'verify') throw ErrMissingKeyFields;
+
+  const user = await User.findOne({ email: { $regex: new RegExp(email, "i") } });
+  if (!user) throw ErrInvalidOTP;
   let isOtp;
 
   // to handle forgot password otp verification...
-  if (type === "forgot") {
+  if (type === "reset") {
     isOtp = await OTP.findOne({
       user_uuid: user.uuid,
       otpCode: otp,
@@ -91,7 +93,16 @@ const verifyUserOtpService = async (otp, email, type) => {
     });
     if (!isOtp) throw ErrInvalidOTP;
   }
-  return user.uuid;
+
+  const payload = {
+    _id: user._id,
+    uuid: user.uuid,
+    isVerified: user.isVerified,
+  };
+
+  const token = await generateToken(payload);
+
+  return {user_uuid : user.uuid, token};
 };
 
 /**

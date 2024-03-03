@@ -3,16 +3,16 @@ import { getErrorMessage } from "../../errors/index.js";
 
 
 /**
- * @description User account creation controller
+ * @description User account & login creation controller
  */
 export const createUserOrLoginAccount = async (req, res) => {
   try {
     const userReq = req.body;
     const user = await AuthService.createUserOrLoginAccountService(userReq);
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Account log in success",
-      ...user
+      data: user
     });
     return;
   } catch (error) {
@@ -33,11 +33,11 @@ export const verifyUserOtp = async (req, res) => {
   try {
     const {email, otp} = req.body;
     const {type} = req.query;
-    const userId = await AuthService.verifyUserOtpService(otp, email, type)
+    const user = await AuthService.verifyUserOtpService(otp, email, type)
     res.status(200).json({
       success: true,
       message: `Otp verified`,
-      userId,
+      data: user,
     });
     return;
   } catch (error) {

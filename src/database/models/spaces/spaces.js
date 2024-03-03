@@ -9,7 +9,7 @@ const spaceSchema = new Schema({
     unique: true,
   },
   creator_id: {
-    type: String,
+    type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
     unique : true,

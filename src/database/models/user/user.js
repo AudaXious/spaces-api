@@ -9,7 +9,7 @@ const userSchema = new Schema(
       default: () => uuidV4(),
       unique: true,
     },
-    social_id: {
+    socialId: {
       type: String,
     },
     fullName: {
@@ -31,6 +31,12 @@ const userSchema = new Schema(
       type: Boolean,
       default : false,
     },
+    tags :{
+      type : [String],
+      default : [],
+    },
+    links : [String],
+    default : [],
   },
   {
     timestamps: true,
