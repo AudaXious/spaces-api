@@ -1,14 +1,11 @@
 import User from "../../../database/models/user/user.js";
 import OTP from "../../../database/models/otp/otp.js";
 import {
-  hashPassword,
-  comparePassword,
   generateOTP,
   generateAndSendOTP,
 } from "../../utils/auth.util.js";
 import {
   ErrUserNotFound,
-  ErrInvalidPassword,
   ErrInvalidOTP,
   ErrAccountNotVerified,
   ErrUnauthorized,
@@ -22,24 +19,15 @@ import { generateToken } from "../security/token.service.js";
  * @returns user object
  */
 const createUserOrLoginAccountService = async (userReq) => {
-  const { email, password } = userReq;
-
-  const hp = await hashPassword(password);
+  const { email, } = userReq;
 
   let user = await User.findOne({
     email: { $regex: new RegExp(email, "i") },
   });
 
-  if (user){
-    const isValidPassword = await comparePassword(password, user.password);
-    
-    if(!isValidPassword) throw ErrInvalidPassword;
-
-  }
-  else{
+  if (!user){
     user = await User.create({
       email,
-      password :hp,
     })
   }
 
@@ -59,8 +47,6 @@ const createUserOrLoginAccountService = async (userReq) => {
   );
 
   await generateAndSendOTP({ email, otp, flag: "verify" });
-
-  // const token = await generateToken(payload);
 
   return user;
 };
@@ -102,49 +88,9 @@ const verifyUserOtpService = async (otp, email, type) => {
 
   const token = await generateToken(payload);
 
-  return {user_uuid : user.uuid, token};
+  return {user, token};
 };
 
-/**
- * @description  Fetches a user in the database using email, and sends otp to the email.
- * @param (email) : string
- * @returns   User Id(uuid)
- */
-const forgotPasswordService = async (email) => {
-  const user = await User.findOne({
-    email: { $regex: new RegExp(email, "i") },
-  });
-  if (!user) throw ErrUserNotFound;
-
-  const otp = generateOTP();
-
-  await OTP.create({
-    user_id: user.uuid,
-    otpCode: otp,
-  });
-  await generateAndSendOTP({ email, otp, flag: "reset" });
-  return user.uuid;
-};
-
-/**
- * @description  Fetches a user in the database using email, and sends otp to the email.
- * @param (email) : string
- * @returns   User Id(uuid)
- */
-const changePasswordService = async (userId, password, otp) => {
-  const user = await User.findOne({ uuid: userId });
-  if (!user) throw ErrUserNotFound;
-
-  const isOtp = await OTP.findOneAndDelete({
-    otpCode: otp,
-  });
-
-  if (!isOtp) throw ErrInvalidOTP;
-
-  const hp = await hashPassword(password);
-  await user.updateOne({ password: hp });
-  return;
-};
 
 const socialAuthLoginService = async (userObj) => {
   let findUser;
@@ -170,9 +116,6 @@ const socialAuthLoginService = async (userObj) => {
 
 export const AuthService = {
   createUserOrLoginAccountService,
-  // loginUserAccountService,
   verifyUserOtpService,
-  forgotPasswordService,
-  changePasswordService,
   socialAuthLoginService,
 };

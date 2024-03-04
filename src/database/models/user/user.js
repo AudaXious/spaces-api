@@ -20,9 +20,6 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
-    password: {
-      type: String,
-    },
     username: {
       type: String,
       default :null,
@@ -36,7 +33,6 @@ const userSchema = new Schema(
       default : [],
     },
     links : [String],
-    default : [],
   },
   {
     timestamps: true,
