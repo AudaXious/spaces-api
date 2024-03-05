@@ -1,5 +1,5 @@
 import Spaces from "../../../database/models/spaces/spaces.js";
-import { ErrResourceAlreadyExists } from "../../../errors/index.js";
+import { ErrResourceAlreadyExists, ErrResourceNotFound } from "../../../errors/index.js";
 
 const createSpaceService = async (userReq)=>{
     const  {title} = userReq;
@@ -17,6 +17,15 @@ const createSpaceService = async (userReq)=>{
     return newSpace;
 }
 
+const joinSpace = async(spaceId)=>{
+    const space = await Spaces.findOne({
+        uuid : spaceId,
+    });
+
+    if(!space) throw ErrResourceNotFound;
+    //
+};
 export const SpaceService = {
-    createSpaceService
+    createSpaceService,
+    joinSpace
 }

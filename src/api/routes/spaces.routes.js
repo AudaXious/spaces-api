@@ -15,4 +15,6 @@ routes.post(
   createSpace
 );
 
+
+// routes.post("/join", joinSpace)
 export default routes;
