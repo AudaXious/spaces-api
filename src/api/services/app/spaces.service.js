@@ -1,7 +1,7 @@
 import Spaces from "../../../database/models/spaces/spaces.js";
 import { ErrResourceAlreadyExists, ErrResourceNotFound } from "../../../errors/index.js";
 
-const createSpaceService = async (userReq)=>{
+const createSpaceService = async (userReq, userId)=>{
     const  {title} = userReq;
 
     const space = await Spaces.findOne({
@@ -12,6 +12,7 @@ const createSpaceService = async (userReq)=>{
 
     const newSpace = await Spaces.create({
         ...userReq,
+        creator_id : userId
     })
 
     return newSpace;

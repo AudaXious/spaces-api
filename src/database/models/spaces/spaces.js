@@ -22,6 +22,16 @@ const spaceSchema = new Schema({
     type: String,
     require: true ,
   },
+  tags : {
+    type : [String],
+  },
+  links : {
+    type : [{
+      name : String,
+      url : String,
+    }],
+    default : []
+  },
 },
   {
     timestamps: true,

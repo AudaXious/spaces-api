@@ -3,7 +3,8 @@ import { SpaceService } from "../services/app/spaces.service.js";
 export const createSpace = async (req, res) => {
     try {
       const userReq = req.body;
-      const space = await SpaceService.createSpaceService(userReq);
+      const userId = req.user._id;
+      const space = await SpaceService.createSpaceService(userReq, userId);
       res.status(200).json({
         success: true,
         message: "Space created",
