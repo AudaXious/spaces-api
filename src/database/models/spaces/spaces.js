@@ -12,7 +12,6 @@ const spaceSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Users",
     required: true,
-    unique : true,
   },
   title: {
     type: String,
@@ -32,6 +31,8 @@ const spaceSchema = new Schema({
     }],
     default : []
   },
+  bannerUrl : String,
+  iconUrl :  String,
 },
   {
     timestamps: true,

@@ -16,7 +16,6 @@ routes.post(
   validateRequest(createUserOrLoginAccountValidator),
   createUserOrLoginAccount
 );
-
 //
 routes.post("/verify",validateRequest(OTPVerificationValidator), verifyUserOtp);
 

@@ -1,23 +1,37 @@
 import User from "../../../database/models/user/user.js";
 import {
   ErrResourceAlreadyExists,
+  ErrUserAlreadyHasUsername,
   ErrUserNotFound,
 } from "../../../errors/index.js";
+import Username from "../../../database/models/user/username.js"
 
 const createUsernameService = async (userName, userId) => {
   const user = await User.findOne({
-    username: userName,
+    _id: userId,
   });
 
-  if (user) throw ErrResourceAlreadyExists;
+  if (!user) throw ErrUserNotFound;
 
-  const newUserName = await User.findOneAndUpdate(
-    { _id: userId },
-    { username: userName },
-    { new: true }
+  const [isUser, isUsername] =await Promise.all([
+    await Username.findOne({
+     user_uuid : user.user_uuid,
+      }),
+      await Username.findOne({
+        username : userName,
+      })
+    ]);
+
+  if(isUser) throw ErrUserAlreadyHasUsername;
+  if(isUsername) throw ErrResourceAlreadyExists;
+  
+  const newUserName = await Username.create({
+    user_id :user._id,
+    username : userName,  
+  }
   );
-  const { email, username, ...userData } = newUserName;
-  return { email, username };
+  const {password, ...userData} = user;
+  return { user, username : newUserName.username };
 };
 
 export const ProfileService = {

@@ -12,6 +12,8 @@ export const ErrMissingHeader = new Error("Missing request header")
 //409
 export const ErrEmailAlreadyExists = new Error("Email already exists");
 export const ErrResourceAlreadyExists = new Error("Resource already exists");
+export const ErrUserAlreadyHasUsername = new Error("User already has a username")
+export const ErrAlreadyJoined = new Error("User is a member of this space");
 
 //404
 export const ErrResourceNotFound = new Error("Resource not found");
@@ -23,6 +25,7 @@ export const ErrForumNotFound = new Error("Forum not found");
 //401
 export const ErrUnauthorized = new Error("User not authorized");
 export const ErrAccountNotVerified = new Error("Account not verified");
+export const ErrVerifyingTwitter = new Error("A twitter account is already linked to this account")
 
 
 //500
@@ -43,6 +46,7 @@ export const getErrorMessage = (error) => {
         
         case ErrUnauthorized:
         case ErrAccountNotVerified:
+        case ErrVerifyingTwitter:
             code = 401;
             break;
 
@@ -61,6 +65,7 @@ export const getErrorMessage = (error) => {
 
         case ErrEmailAlreadyExists:
         case ErrResourceAlreadyExists:
+        case ErrAlreadyJoined:            
             code = 409;
             break;
 
