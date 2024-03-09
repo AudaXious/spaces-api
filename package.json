@@ -1,6 +1,6 @@
 {
-  "name": "braveit-api",
-  "version": "1.0.0",
+  "name": "audaxious-spaces-api",
+  "version": "1.1.0",
   "main": "index.js",
   "type": "module",
   "repository": "",
