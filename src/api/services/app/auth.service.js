@@ -12,6 +12,7 @@ import {
 } from "../../../errors/index.js";
 
 import { generateToken } from "../security/token.service.js";
+import Username from "../../../database/models/user/username.js";
 
 /**
  * @description  This method creates or login a User Account
@@ -47,8 +48,12 @@ const createUserOrLoginAccountService = async (userReq) => {
   );
 
   await generateAndSendOTP({ email, otp, flag: "verify" });
+  
+  const username = await Username.findOne({
+    user_id : user._id
+  });
 
-  return user;
+  return {...user.toJSON(), username};
 };
 
 /**
@@ -87,8 +92,10 @@ const verifyUserOtpService = async (otp, email, type) => {
   };
 
   const token = await generateToken(payload);
-
-  return {user, token};
+  const username = await Username.findOne({
+    user_id : user._id
+  });
+  return {...user.toJSON(), username, token};
 };
 
 
