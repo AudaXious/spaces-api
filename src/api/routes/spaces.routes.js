@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
-    createSpace, joinSpace
+    createSpace, 
+    joinSpace,
+    getAllSpaces
 } from "../controllers/spaces.controller.js";
 import { validateRequest } from "../utils/api-utils.js";
 import {
@@ -16,4 +18,6 @@ routes.post(
 );
 
 routes.post("/join/:spaceId", joinSpace)
+
+routes.get("/all", getAllSpaces)
 export default routes;

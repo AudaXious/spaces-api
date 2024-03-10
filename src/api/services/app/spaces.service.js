@@ -26,31 +26,41 @@ const createSpaceService = async (userReq, userId)=>{
     return newSpace;
 }
 
-const joinSpaceService = async(spaceId)=>{
+const joinSpaceService = async(spaceId, userId)=>{
     const space = await Spaces.findOne({
         uuid : spaceId,
     });
+    console.log("spaceeeeeeeeeee",space._id);
 
     if(!space) throw ErrResourceNotFound;
     //
+    console.log("userrrrrrrrr", userId)
+
     const spaceMember = await SpacesMembers.findOne({
-        spaceId : space._id,
+        space_id : space._id,
         user_id : userId
     })
 
+    console.log(spaceMember)
     if(spaceMember) throw ErrAlreadyJoined;
 
     await SpacesMembers.create({
-        spaceId : space._id,
+        space_id : space._id,
         user_id : userId,
     })
     return;
 };
+
+const getAllSpacesService = async ()=>{
+    const spaces = await Spaces.find();
+    return spaces;
+}
 
 // const addSpaceBannerAndAvatarService = async()=>{
 
 // };
 export const SpaceService = {
     createSpaceService,
-    joinSpaceService
+    joinSpaceService,
+    getAllSpacesService
 }
