@@ -66,6 +66,7 @@ export const getErrorMessage = (error) => {
         case ErrEmailAlreadyExists:
         case ErrResourceAlreadyExists:
         case ErrAlreadyJoined:            
+        case ErrUserAlreadyHasUsername:            
             code = 409;
             break;
 
