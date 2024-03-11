@@ -16,7 +16,7 @@ export const linkAccount = async (req, res) => {
       const result = getErrorMessage(error);
       return res.status(result.code).json({
         success: false,
-        error: result,
+        error: result.message,
       });
     }
   };
@@ -37,7 +37,7 @@ export const linkAccount = async (req, res) => {
       const result = getErrorMessage(error);
       return res.status(result.code).json({
         success: false,
-        error: result,
+        error: result.message,
       });
     }
   };

@@ -31,7 +31,6 @@ const createUsernameService = async (userName, userId) => {
     username : userName,  
   }
   );
-  const {password, ...userData} = user;
   return { user, username : newUserName.username };
 };
 
