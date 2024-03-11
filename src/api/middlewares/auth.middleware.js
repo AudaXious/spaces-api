@@ -24,6 +24,7 @@ export const authorizeUser = async(req, res, next)=>{
     next();
   } catch (error) {
     const err = getErrorMessage(error);
+    console (err.message);
     res.status(err.code).json({
       success : false,
       error: err.message,

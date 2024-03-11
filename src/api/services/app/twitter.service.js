@@ -1,6 +1,6 @@
 import User from "../../../database/models/user/user.js";
 import Username from "../../../database/models/user/username.js";
-import { ErrVerifyingTwitter } from "../../../errors/index.js";
+import { ErrVerifyingTwitter, ErrUserNotFound,ErrAccountNotVerified } from "../../../errors/index.js";
 import { fetchIdSocialPost, extractIdFromTweet, extractUsername } from "../../utils/extractors.utils.js";
 
 const linkAccountService = async (userId) => {
