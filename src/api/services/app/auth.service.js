@@ -53,7 +53,7 @@ const createUserOrLoginAccountService = async (userReq) => {
     user_id : user._id
   });
 
-  return {...user.toJSON(), username : username.username};
+  return {...user.toJSON(), username : username !== null ? username.username : null};
 };
 
 /**
@@ -95,7 +95,7 @@ const verifyUserOtpService = async (otp, email, type) => {
   const username = await Username.findOne({
     user_id : user._id
   });
-  return {...user.toJSON(), username : username.username, token};
+  return {...user.toJSON(), username : username !== null ? username.username : null, token};
 };
 
 
