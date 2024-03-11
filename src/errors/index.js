@@ -14,6 +14,7 @@ export const ErrEmailAlreadyExists = new Error("Email already exists");
 export const ErrResourceAlreadyExists = new Error("Resource already exists");
 export const ErrUserAlreadyHasUsername = new Error("User already has a username")
 export const ErrAlreadyJoined = new Error("User is a member of this space");
+export const ErrUsernameAlreadyExist = new Error("Username already exists");
 
 //404
 export const ErrResourceNotFound = new Error("Resource not found");
@@ -67,6 +68,7 @@ export const getErrorMessage = (error) => {
         case ErrResourceAlreadyExists:
         case ErrAlreadyJoined:            
         case ErrUserAlreadyHasUsername:            
+        case ErrUsernameAlreadyExist:            
             code = 409;
             break;
 

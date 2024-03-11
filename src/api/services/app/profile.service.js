@@ -3,6 +3,7 @@ import {
   ErrResourceAlreadyExists,
   ErrUserAlreadyHasUsername,
   ErrUserNotFound,
+  ErrUsernameAlreadyExist,
 } from "../../../errors/index.js";
 import Username from "../../../database/models/user/username.js"
 
@@ -15,7 +16,7 @@ const createUsernameService = async (userName, userId) => {
 
   const [isUser, isUsername] =await Promise.all([
     await Username.findOne({
-     user_uuid : user.user_uuid,
+     user_id : user._id,
       }),
       await Username.findOne({
         username : userName,
@@ -23,7 +24,7 @@ const createUsernameService = async (userName, userId) => {
     ]);
 
   if(isUser) throw ErrUserAlreadyHasUsername;
-  if(isUsername) throw ErrResourceAlreadyExists;
+  if(isUsername) throw ErrUsernameAlreadyExist;
   
   const newUserName = await Username.create({
     user_id :user._id,
