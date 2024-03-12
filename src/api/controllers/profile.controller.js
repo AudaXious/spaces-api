@@ -24,3 +24,23 @@ export const createUsername = async (req, res) => {
     }
   };
   
+export const getUser = async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const user = await ProfileService.getUserService(userId);
+      res.status(200).json({
+        success: true,
+        message: "User fetched successfully",
+        data: user
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      const result = getErrorMessage(error);
+      return res.status(result.code).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  };
+  

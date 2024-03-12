@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUsername } from "../controllers/profile.controller.js";
+import { createUsername, getUser } from "../controllers/profile.controller.js";
 import { validateRequest } from "../utils/api-utils.js";
 import { createUsernameValidator } from "../middlewares/validators/profile.validators.js";
 
@@ -10,5 +10,9 @@ routes.post(
   validateRequest(createUsernameValidator),
   createUsername
 );
+
+routes.get(
+  "/user", getUser
+)
 
 export default routes;

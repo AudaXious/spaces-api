@@ -34,6 +34,26 @@ const createUsernameService = async (userName, userId) => {
   return { user, username : newUserName.username };
 };
 
+
+const getUserService = async (userId) => {
+  const user = await User.findOne({
+    _id : userId
+  })
+
+  if(!user) throw ErrUserNotFound;
+  
+  const username = await Username.findOne({
+    user_id : userId,
+  });
+
+  return {
+    ...user.toJSON(), 
+    username : username ? username.username : null,
+    twitterUsername : username? username.twitterUsername : null,
+  }
+};
+
 export const ProfileService = {
   createUsernameService,
+  getUserService,
 };
