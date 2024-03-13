@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { createUsername, getUser } from "../controllers/profile.controller.js";
+import { changeUsername, createUsername, getUser } from "../controllers/profile.controller.js";
 import { validateRequest } from "../utils/api-utils.js";
-import { createUsernameValidator } from "../middlewares/validators/profile.validators.js";
+import { changeUsernameValidator, createUsernameValidator } from "../middlewares/validators/profile.validators.js";
 
 const routes = Router();
 
@@ -14,5 +14,7 @@ routes.post(
 routes.get(
   "/user", getUser
 )
+
+routes.patch("/edit/username", validateRequest(changeUsernameValidator), changeUsername)
 
 export default routes;

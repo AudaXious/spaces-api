@@ -1,6 +1,7 @@
 import User from "../../../database/models/user/user.js";
 import {
   ErrResourceAlreadyExists,
+  ErrResourceNotFound,
   ErrUserAlreadyHasUsername,
   ErrUserNotFound,
   ErrUsernameAlreadyExist,
@@ -19,7 +20,7 @@ const createUsernameService = async (userName, userId) => {
      user_id : user._id,
       }),
       await Username.findOne({
-        username : userName,
+        username : { $regex: new RegExp(userName, "i") },
       })
     ]);
 
@@ -53,7 +54,35 @@ const getUserService = async (userId) => {
   }
 };
 
+const changeUsernameService =  async (userReq, userId)=>{
+  const {newUsername, prevUsername} = userReq;
+  const oldUsername = await Username.findOne({
+    user_id : userId,
+    username : prevUsername,
+  })
+
+  if(!oldUsername) throw ErrResourceNotFound;
+
+  const isUsername = await Username.findOne({
+    username : { $regex: new RegExp(newUsername, "i") },
+  });
+
+  if(isUsername) throw ErrUsernameAlreadyExist;
+
+  const updatedUsername = await Username.findOneAndUpdate({
+    user_id : userId
+  },{
+    username : newUsername
+  },
+  {new : true}
+  );
+
+  return {username : updatedUsername.username};
+
+}
+
 export const ProfileService = {
   createUsernameService,
   getUserService,
+  changeUsernameService
 };
