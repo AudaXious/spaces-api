@@ -56,11 +56,21 @@ const getAllSpacesService = async ()=>{
     return spaces;
 }
 
+const getASpaceService = async(spaceId)=>{
+    const space = await Spaces.findOne({
+        uuid : spaceId,
+    })
+
+    if(!space) throw ErrResourceNotFound;
+
+    return space.toJSON();
+}
 // const addSpaceBannerAndAvatarService = async()=>{
 
 // };
 export const SpaceService = {
     createSpaceService,
     joinSpaceService,
-    getAllSpacesService
+    getAllSpacesService,
+    getASpaceService
 }

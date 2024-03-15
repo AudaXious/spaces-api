@@ -61,3 +61,23 @@ export const createSpace = async (req, res) => {
       });
     }
   };
+
+  export const getASpace = async (req, res) => {
+    try {
+      const {spaceId} = req.params;
+      const space = await SpaceService.getASpaceService(spaceId);
+      res.status(200).json({
+        success: true,
+        message: "Space fetched Succesfully",
+        data : space,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      const result = getErrorMessage(error);
+      return res.status(result.code).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  };

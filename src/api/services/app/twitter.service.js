@@ -14,7 +14,7 @@ const verifySocialLinkService = async (url) => {
   const content = await extractIdFromTweet(tweetBody.html);
   console.log(content);
   if (!content) throw ErrAccountNotVerified;
-
+  
   const id = content.split("=")[1] ?? null;
   //
   const user = await User.findOne({
