@@ -27,10 +27,11 @@ const attachmentSchema = new Schema(
   {
     timestamps: true,
     versionKey : false,
+    id:false,
     toJSON: {
       virtuals: true,
       transform: (doc, ret) => {
-        ret.id = ret._id;
+        // ret.id = ret._id;
         delete ret._id;
         return ret;
       },

@@ -1,22 +1,22 @@
 import SpacesMembers from "../../../database/models/spaces/spaceMembers.js";
 import Spaces from "../../../database/models/spaces/spaces.js";
 import Username from "../../../database/models/user/username.js";
-import { ErrResourceAlreadyExists,ErrAlreadyJoined, ErrResourceNotFound } from "../../../errors/index.js";
+import { ErrResourceAlreadyExists,ErrAlreadyJoined, ErrResourceNotFound, ErrSpaceAlreadyExists } from "../../../errors/index.js";
 
 const createSpaceService = async (userReq, userId)=>{
     const  {title} = userReq;
 
     const [isExistingUsername,isExistingSpace] = await Promise.all([await Username.findOne({
-        username : { $regex: new RegExp(title, "i") }
+        username : { $regex: new RegExp(`^${title}$`, "i") }
     }),
 
     await Spaces.findOne({
-        title : { $regex: new RegExp(title, "i") }
+        title : { $regex: new RegExp(`^${title}$`, "i") }
     })
     ]);
 
     if(isExistingUsername) throw ErrResourceAlreadyExists;
-    if(isExistingSpace) throw ErrResourceAlreadyExists;
+    if(isExistingSpace) throw ErrSpaceAlreadyExists;
 
     const newSpace = await Spaces.create({
         ...userReq,

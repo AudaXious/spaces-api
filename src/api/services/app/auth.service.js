@@ -23,7 +23,7 @@ const createUserOrLoginAccountService = async (userReq) => {
   const { email, } = userReq;
 
   let user = await User.findOne({
-    email: { $regex: new RegExp(email, "i") },
+    email: { $regex: new RegExp(`^${email}$`, "i") },
   });
 
   if (!user){

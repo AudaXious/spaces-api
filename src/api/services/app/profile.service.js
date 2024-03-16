@@ -20,7 +20,7 @@ const createUsernameService = async (userName, userId) => {
      user_id : user._id,
       }),
       await Username.findOne({
-        username : { $regex: new RegExp(userName, "i") },
+        username : { $regex: new RegExp(`^${userName}$`, "i") },
       })
     ]);
 
@@ -64,7 +64,7 @@ const changeUsernameService =  async (userReq, userId)=>{
   if(!oldUsername) throw ErrResourceNotFound;
 
   const isUsername = await Username.findOne({
-    username : { $regex: new RegExp(newUsername, "i") },
+    username : { $regex: new RegExp(`^${newUsername}$`, "i") },
   });
 
   if(isUsername) throw ErrUsernameAlreadyExist;

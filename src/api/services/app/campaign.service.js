@@ -6,22 +6,22 @@ const createCampaignService = async(userReq, userId, spaceId)=>{
     const {title} = userReq;
     const space = await Spaces.findOne({
        uuid : spaceId
-    })
-
-    if(!space) throw ErrResourceNotFound;
+    }).populate("creator_id")
     
-    if(space.creator_id !== userId) throw ErrUnauthorized;
+    if(!space) throw ErrResourceNotFound;
+
+    if(space.creator_id._id.toString() !== userId) throw ErrUnauthorized;
 
     const isCampaign = await Campaigns.findOne({
-        title : { $regex: new RegExp(title, "i") },
-        space_id : space._id,
+        title : { $regex: new RegExp(`^${title}$`, "i") },
+        space_id : space.uuid,
     });
 
     if(isCampaign) throw ErrResourceAlreadyExists;
 
     const campaign = await Campaigns.create({
         ...userReq,
-        space_id : spaceId,
+        space_id : space.uuid,
     });
 
     return campaign.toJSON();

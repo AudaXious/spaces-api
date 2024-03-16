@@ -10,8 +10,8 @@ export const createCampaign = async (req, res) => {
       const campaign = await CampaignService.createCampaignService(userReq, userId, spaceId)
       res.status(200).json({
         success: true,
-        message: "Username updated successfully",
-        data: user
+        message: "Campaign Created",
+        data: campaign
       });
       return;
     } catch (error) {
