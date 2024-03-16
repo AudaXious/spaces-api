@@ -12,12 +12,14 @@ const userSchema = new Schema(
     socialId: {
       type: String,
     },
+    walletId: {
+      type: String,
+    },
     fullName: {
       type: String,
     },
     email: {
       type: String,
-      required: true,
       unique: true,
     },
     isVerified: {

@@ -23,13 +23,11 @@ const spaceSchema = new Schema({
   },
   tags : {
     type : [String],
+    default : [],
   },
   links : {
-    type : [{
-      name : String,
-      url : String,
-    }],
-    default : []
+    type : [String],
+    default : [],
   },
   bannerUrl : String,
   iconUrl :  String,
@@ -42,10 +40,6 @@ const spaceSchema = new Schema({
       virtuals: true,
       transform: (doc, ret) => {
         // ret.id = ret._id;
-        ret.links.forEach(link => {
-          link.id = link._id;
-          delete link._id;
-        });
         delete ret._id;
         return ret;
       },

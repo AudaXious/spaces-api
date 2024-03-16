@@ -23,3 +23,45 @@ export const createCampaign = async (req, res) => {
       });
     }
   };
+
+
+export const getAllSpacesCampaign = async (req, res) => {
+    try {
+      const {spaceId} = req.params;
+      const campaigns = await CampaignService.getAllSpacesCampaignService(spaceId)
+      res.status(200).json({
+        success: true,
+        message: "Campaigns Fetched",
+        data: campaigns
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      const result = getErrorMessage(error);
+      return res.status(result.code).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  };
+
+
+export const getACampaign = async (req, res) => {
+    try {
+      const {campaignId} = req.params;
+      const campaigns = await CampaignService.getACampaignService(campaignId)
+      res.status(200).json({
+        success: true,
+        message: "Campaign Fetched",
+        data: campaigns
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      const result = getErrorMessage(error);
+      return res.status(result.code).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  };

@@ -1,7 +1,8 @@
 import SpacesMembers from "../../../database/models/spaces/spaceMembers.js";
 import Spaces from "../../../database/models/spaces/spaces.js";
 import Username from "../../../database/models/user/username.js";
-import { ErrResourceAlreadyExists,ErrAlreadyJoined, ErrResourceNotFound, ErrSpaceAlreadyExists } from "../../../errors/index.js";
+import { ErrResourceAlreadyExists,ErrAlreadyJoined, ErrResourceNotFound, ErrSpaceAlreadyExists, ErrUserNotFound } from "../../../errors/index.js";
+import User from "../../../database/models/user/user.js";
 
 const createSpaceService = async (userReq, userId)=>{
     const  {title} = userReq;
@@ -65,12 +66,27 @@ const getASpaceService = async(spaceId)=>{
 
     return space.toJSON();
 }
-// const addSpaceBannerAndAvatarService = async()=>{
 
-// };
+const getUserSpaceService = async (userId) =>{
+    const user = await User.findOne({
+        uuid : userId
+    })
+    
+    if(!user) throw ErrUserNotFound;
+
+    const spaces = await Spaces.find({
+        creator_id : user._id,
+    })
+
+    if(!spaces) throw ErrResourceNotFound;
+
+    return spaces;
+}
+
 export const SpaceService = {
     createSpaceService,
     joinSpaceService,
     getAllSpacesService,
-    getASpaceService
+    getASpaceService,
+    getUserSpaceService
 }

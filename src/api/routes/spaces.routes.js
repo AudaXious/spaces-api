@@ -3,7 +3,8 @@ import {
     createSpace, 
     joinSpace,
     getAllSpaces,
-    getASpace
+    getASpace,
+    getUserSpace
 } from "../controllers/spaces.controller.js";
 import { validateRequest } from "../utils/api-utils.js";
 import {
@@ -23,4 +24,6 @@ routes.post("/join/:spaceId", joinSpace)
 routes.get("/all", getAllSpaces)
 //
 routes.get("/s/:spaceId", getASpace);
+//
+routes.get("/user/all", getUserSpace);
 export default routes;
