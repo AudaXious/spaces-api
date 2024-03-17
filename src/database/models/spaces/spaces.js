@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { v4 as uuidV4 } from "uuid";
+import Campaigns from "../campaigns/campaign.js";
 
 const spaceSchema = new Schema({
   uuid: {
@@ -46,6 +47,16 @@ const spaceSchema = new Schema({
     },
   }
 );
+
+spaceSchema.pre('remove', async function(next) {
+  try {
+    // Remove all campaign documents where space_id matches the current space's uuid
+    await Campaigns.deleteMany({ space_id: this.uuid });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const Spaces = model("Spaces", spaceSchema);
 

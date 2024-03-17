@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { v4 as uuidV4 } from "uuid";
+import Spaces from "../spaces/spaces.js";
 
 const userSchema = new Schema(
   {
@@ -53,6 +54,16 @@ userSchema.statics.findOneOrCreate = async function findOneOrCreate(filter, doc)
   }
   return result;
 };
+
+userSchema.pre('remove', async function(next) {
+  try {
+    // Remove all Spaces documents where creator_id matches the current user's _id
+    await Spaces.deleteMany({ creator_id: this._id });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const User = model("Users", userSchema);
 
