@@ -31,7 +31,10 @@ const verifySocialLinkService = async (url) => {
   //   { new: true }
   // );
   const isLinked = await Username.findOne({
-    user_id : user._id,
+    $or: [
+      { user_id: user._id },
+      { twitterUsername: twitter_username }
+    ]
   });
 
   if(isLinked && isLinked.twitterUsername !== null) throw ErrVerifyingTwitter

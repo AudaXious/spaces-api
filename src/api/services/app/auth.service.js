@@ -65,6 +65,9 @@ const verifyUserOtpService = async (otp, email, type) => {
   if(type !== 'reset' && type !== 'verify') throw ErrMissingKeyFields;
 
   const user = await User.findOne({ email: { $regex: new RegExp(email, "i") } });
+  const username = await Username.findOne({
+    user_id : user._id
+  });
   if (!user) throw ErrInvalidOTP;
   let isOtp;
 
@@ -89,12 +92,11 @@ const verifyUserOtpService = async (otp, email, type) => {
     _id: user._id,
     uuid: user.uuid,
     isVerified: user.isVerified,
+    twitterUsername : username ? username.twitterUsername : null
   };
 
   const token = await generateToken(payload);
-  const username = await Username.findOne({
-    user_id : user._id
-  });
+
   return {...user.toJSON(), username : username !== null ? username.username : null, token};
 };
 

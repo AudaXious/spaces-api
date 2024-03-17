@@ -27,7 +27,9 @@ export const ErrForumNotFound = new Error("Forum not found");
 //401
 export const ErrUnauthorized = new Error("User not authorized");
 export const ErrAccountNotVerified = new Error("Account not verified");
-export const ErrVerifyingTwitter = new Error("A twitter account is already linked to this account")
+export const ErrVerifyingTwitter = new Error("Twitter account is currently linked to an account")
+export const ErrTwitterAccountNotLinked = new Error("Please link twitter account")
+
 
 
 //500
@@ -49,6 +51,7 @@ export const getErrorMessage = (error) => {
         case ErrUnauthorized:
         case ErrAccountNotVerified:
         case ErrVerifyingTwitter:
+        case ErrTwitterAccountNotLinked:
             code = 401;
             break;
 

@@ -19,6 +19,7 @@ export const authorizeUser = async(req, res, next)=>{
       _id: decodedToken._id,
       uuid: decodedToken.uuid,
       isVerified: decodedToken.isVerified,
+      twitterUsername : decodedToken.twitterUsername,
     };
 
     next();
