@@ -92,7 +92,6 @@ const verifyUserOtpService = async (otp, email, type) => {
     _id: user._id,
     uuid: user.uuid,
     isVerified: user.isVerified,
-    twitterUsername : username ? username.twitterUsername : null
   };
 
   const token = await generateToken(payload);

@@ -4,8 +4,8 @@ import { getErrorMessage } from "../../errors/index.js";
 export const createSpace = async (req, res) => {
     try {
       const userReq = req.body;
-      const {_id, twitterUsername} = req.user;
-      const space = await SpaceService.createSpaceService(userReq, _id, twitterUsername);
+      const {_id} = req.user;
+      const space = await SpaceService.createSpaceService(userReq, _id,);
       res.status(200).json({
         success: true,
         message: "Space created",

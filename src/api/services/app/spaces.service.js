@@ -10,8 +10,12 @@ import {
     ErrTwitterAccountNotLinked } from "../../../errors/index.js";
 import User from "../../../database/models/user/user.js";
 
-const createSpaceService = async (userReq, userId, twitterUsername)=>{
+const createSpaceService = async (userReq, userId)=>{
     const  {title} = userReq;
+
+    const user  = await User.findById(userId);
+
+    if(!user) throw ErrUserNotFound;
 
     const [isExistingUsername,isExistingSpace] = await Promise.all([await Username.findOne({
         username : { $regex: new RegExp(`^${title}$`, "i") }
@@ -24,11 +28,12 @@ const createSpaceService = async (userReq, userId, twitterUsername)=>{
 
     if(isExistingUsername) throw ErrResourceAlreadyExists;
     if(isExistingSpace) throw ErrSpaceAlreadyExists;
-    if(twitterUsername === null) throw ErrTwitterAccountNotLinked;
+    if(user.twitterUsername === null) throw ErrTwitterAccountNotLinked;
     
     const newSpace = await Spaces.create({
         ...userReq,
-        creator_id : userId
+        creator_id : userId,
+        creator_uuid : user.uuid,
     })
 
     return newSpace;

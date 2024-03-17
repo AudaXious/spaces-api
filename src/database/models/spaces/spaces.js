@@ -14,6 +14,11 @@ const spaceSchema = new Schema({
     ref: "Users",
     required: true,
   },
+  creator_uuid: {
+    type: String,
+    ref: "Users",
+    required: true,
+  },
   title: {
     type: String,
     require: true,
@@ -42,6 +47,7 @@ const spaceSchema = new Schema({
       transform: (doc, ret) => {
         // ret.id = ret._id;
         delete ret._id;
+        delete ret.creator_id;
         return ret;
       },
     },
@@ -51,7 +57,7 @@ const spaceSchema = new Schema({
 spaceSchema.pre('remove', async function(next) {
   try {
     // Remove all campaign documents where space_id matches the current space's uuid
-    await Campaigns.deleteMany({ space_id: this.uuid });
+    await Campaigns.deleteMany({ space_id: this._id });
     next();
   } catch (err) {
     next(err);

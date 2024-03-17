@@ -14,14 +14,15 @@ const createCampaignService = async(userReq, userId, spaceId)=>{
 
     const isCampaign = await Campaigns.findOne({
         title : { $regex: new RegExp(`^${title}$`, "i") },
-        space_id : space.uuid,
+        space_id : space._id,
     });
 
     if(isCampaign) throw ErrResourceAlreadyExists;
 
     const campaign = await Campaigns.create({
         ...userReq,
-        space_id : space.uuid,
+        space_id : space._id,
+        space_uuid : space.uuid
     });
 
     return campaign.toJSON();

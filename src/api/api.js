@@ -6,6 +6,7 @@ import spaceRoutes from "./routes/spaces.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import twitterRoutes from "./routes/twitter.routes.js";
 import campaignRoutes from "./routes/campaign.routes.js";
+import taskRoutes from "./routes/task.routes.js";
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use('/twitter', twitterRoutes )
 app.use('/spaces', spaceRoutes)
 app.use('/profile', profileRoutes)
 app.use('/campaign', campaignRoutes)
+app.use('/task', taskRoutes)
 
 export default app;
