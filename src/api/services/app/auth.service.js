@@ -9,6 +9,7 @@ import {
   ErrInvalidOTP,
   ErrAccountNotVerified,
   ErrUnauthorized,
+  ErrResourceAlreadyExists,
 } from "../../../errors/index.js";
 
 import { generateToken } from "../security/token.service.js";
@@ -122,8 +123,34 @@ const socialAuthLoginService = async (userObj) => {
   return { token, user: findUser.email };
 };
 
+const walletLogInService = async(walletId)=>{
+  let wallet;
+
+  wallet = await User.findOne({
+    walletId : walletId,
+  });
+
+  if(!wallet){
+    wallet = await User.create({
+      walletId : walletId,
+    });
+  };
+
+  const payload = {
+    _id: wallet._id,
+    uuid: wallet.uuid,
+    isVerified: wallet.isVerified,
+  };
+
+  const token = await generateToken(payload);
+
+  return {user : wallet, token}
+}
+
+
 export const AuthService = {
   createUserOrLoginAccountService,
   verifyUserOtpService,
   socialAuthLoginService,
+  walletLogInService
 };

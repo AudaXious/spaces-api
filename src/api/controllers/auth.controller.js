@@ -51,3 +51,25 @@ export const verifyUserOtp = async (req, res) => {
 };
 
 
+/**
+ * @description Wallet  account & login creation controller
+ */
+export const walletLogIn = async (req, res) => {
+  try {
+    const {walletId} = req.body;
+    const user = await AuthService.walletLogInService(walletId);
+    res.status(200).json({
+      success: true,
+      message: "Account log in success",
+      data: user
+    });
+    return;
+  } catch (error) {
+    console.log(error);
+    const result = getErrorMessage(error);
+    return res.status(result.code).json({
+      success: false,
+      error: result.message,
+    });
+  }
+};
