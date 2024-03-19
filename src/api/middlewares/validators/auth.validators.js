@@ -11,6 +11,6 @@ export const OTPVerificationValidator = joi.object({
 });
 
 export const walletLogInValidator = joi.object({
-  walletId: joi.string().pattern(/^0x[a-fA-F0-9]{48}$/).required(),
+  walletId: joi.string().pattern(/^0x[a-fA-F0-9]{40}$/).required(),
 });
 
