@@ -102,3 +102,22 @@ export const getUserSpace = async (req, res) => {
       });
     }
   };
+export const getUserJoinedSpace = async (req, res) => {
+    try {
+      const {_id} = req.user;
+      const spaces = await SpaceService.getUserJoinedSpaceService(_id);
+      res.status(200).json({
+        success: true,
+        message: "User's Space fetched Succesfully",
+        data : spaces,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      const result = getErrorMessage(error);
+      return res.status(result.code).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  };

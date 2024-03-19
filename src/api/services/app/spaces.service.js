@@ -94,11 +94,18 @@ const getUserSpaceService = async (userId) =>{
 
     return spaces;
 }
+const getUserJoinedSpaceService = async (userId) =>{
+    const spaces = await SpacesMembers.find({
+        user_id : userId,
+    });
+    return spaces;
+}
 
 export const SpaceService = {
     createSpaceService,
     joinSpaceService,
     getAllSpacesService,
     getASpaceService,
-    getUserSpaceService
+    getUserSpaceService,
+    getUserJoinedSpaceService
 }

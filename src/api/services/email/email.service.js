@@ -7,7 +7,7 @@ export const sendToMail = async (options) => {
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
-      apiKey: process.env.EMAIL_APIKEY
+      apiKey: process.env.EMAIL_APIKEY,
     },
     tls: { rejectUnauthorized: false },
   });

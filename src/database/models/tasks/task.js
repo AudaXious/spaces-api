@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { v4 as uuidV4 } from "uuid";
 
-const campaignSchema = new Schema({
+const taskSchema = new Schema({
   uuid: {
     type: String,
     required: true,
@@ -43,6 +43,6 @@ const campaignSchema = new Schema({
   }
 );
 
-const Campaigns = model("Campaigns", campaignSchema);
+const Task = model("Task", taskSchema);
 
-export default Campaigns;
+export default Task;
