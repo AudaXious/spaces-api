@@ -65,3 +65,22 @@ export const getACampaign = async (req, res) => {
       });
     }
   };
+
+export const getCampaigns = async (req, res) => {
+    try {
+      const campaigns = await CampaignService.getCampaignsService()
+      res.status(200).json({
+        success: true,
+        message: "Campaign Fetched",
+        data: campaigns
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      const result = getErrorMessage(error);
+      return res.status(result.code).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  };

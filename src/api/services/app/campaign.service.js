@@ -37,7 +37,7 @@ const getAllSpacesCampaignService = async(spaceId)=>{
     if(!space) throw ErrResourceNotFound;
 
     const campaigns = await Campaigns.find({
-        space_id : space.uuid,
+        space_id : space._id,
     });
 
     return campaigns;
@@ -52,9 +52,14 @@ const getACampaignService = async(campaignId)=>{
      
      return campaign;
 }
+const getCampaignsService = async()=>{
+     const campaign = await Campaigns.find();     
+     return campaign;
+}
 
 export const  CampaignService = {
     createCampaignService,
     getAllSpacesCampaignService,
-    getACampaignService
+    getACampaignService,
+    getCampaignsService
 }
