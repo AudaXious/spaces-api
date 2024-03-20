@@ -144,7 +144,11 @@ const walletLogInService = async(walletId)=>{
 
   const token = await generateToken(payload);
 
-  return {user : wallet, token}
+  const username = await Username.findOne({
+    user_id : wallet._id
+  });
+
+  return {...wallet.toJSON(), username : username ? username.username : null,token}
 }
 
 

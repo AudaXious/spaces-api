@@ -13,10 +13,10 @@ const app = express();
 app.use(socialAuthRoutes)
 app.use('/user', authRoutes)
 app.use('/spaces', spaceRoutes)
+app.use('/campaign', campaignRoutes)
 app.use(authorizeUser);
 app.use('/twitter', twitterRoutes )
 app.use('/profile', profileRoutes)
-app.use('/campaign', campaignRoutes)
 app.use('/task', taskRoutes)
 
 export default app;
