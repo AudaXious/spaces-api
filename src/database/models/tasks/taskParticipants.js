@@ -1,32 +1,29 @@
 import { Schema, model } from "mongoose";
 import { v4 as uuidV4 } from "uuid";
 
-const taskSchema = new Schema({
+const taskParticipantsSchema = new Schema({
   uuid: {
     type: String,
     required: true,
     default: () => uuidV4(),
     unique: true,
   },
-  campaign_id: {
+  task_id: {
     type: Schema.Types.ObjectId,
-    ref: "Campaigns",
+    ref: "Task",
     required: true,
   },
-  campaign_uuid: {
+  task_uuid: {
     type: String,
-    ref: "Campaigns",
+    ref: "Task",
     required: true,
   },
-  action: {
-    type: String,
-    require: true,
-    enum: ["share", "post", "like", "repost", "follow"],
+  user_id: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "Users",
+    required: true,
   },
-  url :  {
-    type : String,
-    required : true,
-  }
 },
   {
     timestamps: true,
@@ -43,6 +40,6 @@ const taskSchema = new Schema({
   }
 );
 
-const Task = model("Task", taskSchema);
+const TaskParticipants = model("TaskParticipants", taskParticipantsSchema);
 
-export default Task;
+export default TaskParticipants;

@@ -37,6 +37,10 @@ const spaceSchema = new Schema({
   },
   bannerUrl : String,
   iconUrl :  String,
+  category : {
+    type : String,
+    enum : ["defi", "gaminng"]
+  },
 },
   {
     timestamps: true,

@@ -20,7 +20,17 @@ const createTaskService = async (userId, userReq, campaignId) => {
   return task;
 };
 
+const participateInTasksService = async(taskId)=>{
+  const task = await Task.findOne({
+    uuid : taskId,
+  }).populate("campaign_id");
+
+  if(!task) throw ErrResourceNotFound;
+
+  console.log(task);
+}
 
 export const TaskService ={
     createTaskService,
+    participateInTasksService,
 }

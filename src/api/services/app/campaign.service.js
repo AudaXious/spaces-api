@@ -1,6 +1,7 @@
 import Campaigns from "../../../database/models/campaigns/campaign.js";
 import Spaces from "../../../database/models/spaces/spaces.js"
 import { ErrResourceAlreadyExists, ErrResourceNotFound, ErrUnauthorized } from "../../../errors/index.js"
+import Task from "../../../database/models/tasks/task.js";
 
 const createCampaignService = async(userReq, userId, spaceId)=>{
     const {title} = userReq;
@@ -53,8 +54,54 @@ const getACampaignService = async(campaignId)=>{
      return campaign;
 }
 const getCampaignsService = async()=>{
-     const campaign = await Campaigns.find();     
-     return campaign;
+   
+    const campaignsWithTaskCountAndSpaceDetails = await Campaigns.aggregate([
+        {
+          $lookup: {
+            from: 'tasks',
+            let: { campaign_uuid: '$uuid' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ['$campaign_uuid', '$$campaign_uuid'] },
+                },
+              },
+            ],
+            as: 'tasks',
+          },
+        },
+        {
+          $lookup: {
+            from: 'spaces',
+            localField: 'space_id',
+            foreignField: '_id',
+            as: 'space',
+          },
+        },
+        {
+          $unwind: '$space',
+        },
+        {
+          $addFields: {
+            space_title: '$space.title',
+            space_uuid: '$space.uuid',
+          },
+        },
+        {
+          $project: {
+            title: 1,
+            description: 1,
+            points: 1,
+            endDate: 1,
+            taskCount: { $size: '$tasks' },
+            space_title: 1,
+            space_uuid: 1,
+            tasks: 1, 
+          },
+        },
+      ]);
+  
+      return campaignsWithTaskCountAndSpaceDetails;
 }
 
 export const  CampaignService = {

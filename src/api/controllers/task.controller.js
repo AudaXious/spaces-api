@@ -23,3 +23,25 @@ export const createTask = async (req, res) => {
       });
     }
   };
+
+  export const participateInTasks = async (req, res) => {
+    try {
+      const userId = req.user._id;
+      // const userReq = req.body;
+      const {taskId} = req.params;
+      const task = await TaskService.participateInTasksService(taskId);
+      res.status(200).json({
+        success: true,
+        message: "Task completed",
+        data: task
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      const result = getErrorMessage(error);
+      return res.status(result.code).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  };

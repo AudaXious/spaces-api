@@ -66,10 +66,12 @@ const verifyUserOtpService = async (otp, email, type) => {
   if(type !== 'reset' && type !== 'verify') throw ErrMissingKeyFields;
 
   const user = await User.findOne({ email: { $regex: new RegExp(email, "i") } });
+  
+  if (!user) throw ErrInvalidOTP;
+  
   const username = await Username.findOne({
     user_id : user._id
   });
-  if (!user) throw ErrInvalidOTP;
   let isOtp;
 
   // to handle forgot password otp verification...
@@ -133,6 +135,7 @@ const walletLogInService = async(walletId)=>{
   if(!wallet){
     wallet = await User.create({
       walletId : walletId,
+      isVerified : true,
     });
   };
 

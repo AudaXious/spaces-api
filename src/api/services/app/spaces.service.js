@@ -43,18 +43,14 @@ const joinSpaceService = async(spaceId, userId)=>{
     const space = await Spaces.findOne({
         uuid : spaceId,
     });
-    console.log("spaceeeeeeeeeee",space._id);
 
     if(!space) throw ErrResourceNotFound;
     //
-    console.log("userrrrrrrrr", userId)
-
     const spaceMember = await SpacesMembers.findOne({
         space_id : space._id,
         user_id : userId
     })
 
-    console.log(spaceMember)
     if(spaceMember) throw ErrAlreadyJoined;
 
     await SpacesMembers.create({
