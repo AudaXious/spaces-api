@@ -97,6 +97,8 @@ const getCampaignsService = async()=>{
             space_title: 1,
             space_uuid: 1,
             tasks: 1, 
+            uuid : 1,
+            _id : 0,
           },
         },
       ]);

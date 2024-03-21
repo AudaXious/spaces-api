@@ -18,6 +18,11 @@ const taskParticipantsSchema = new Schema({
     ref: "Task",
     required: true,
   },
+  campaign_uuid: {
+    type: String,
+    ref: "Campaigns",
+    required: true,
+  },
   user_id: {
     type: Schema.Types.ObjectId,
     required: true,

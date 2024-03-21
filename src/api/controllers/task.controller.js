@@ -27,9 +27,9 @@ export const createTask = async (req, res) => {
   export const participateInTasks = async (req, res) => {
     try {
       const userId = req.user._id;
-      // const userReq = req.body;
+      const {campaignId, spaceId} = req.query;
       const {taskId} = req.params;
-      const task = await TaskService.participateInTasksService(taskId);
+      const task = await TaskService.participateInTasksService(taskId, campaignId, userId, spaceId);
       res.status(200).json({
         success: true,
         message: "Task completed",

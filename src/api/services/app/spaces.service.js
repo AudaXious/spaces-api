@@ -55,6 +55,7 @@ const joinSpaceService = async(spaceId, userId)=>{
 
     await SpacesMembers.create({
         space_id : space._id,
+        space_uuid : space.uuid,
         user_id : userId,
     })
     return;

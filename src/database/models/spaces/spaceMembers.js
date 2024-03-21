@@ -7,6 +7,11 @@ const spaceMemberSchema = new Schema({
     ref: "Spaces",
     required: true,
   },
+  space_uuid: {
+    type: String,
+    ref: "Spaces",
+    required: true,
+  },
   user_id: {
     type: Schema.Types.ObjectId,
     ref: "Users",
