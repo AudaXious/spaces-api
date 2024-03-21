@@ -64,8 +64,8 @@ export const createSpace = async (req, res) => {
 
   export const getASpace = async (req, res) => {
     try {
-      const {spaceId} = req.params;
-      const space = await SpaceService.getASpaceService(spaceId);
+      const {spaceNameOrId} = req.params;
+      const space = await SpaceService.getASpaceService(spaceNameOrId);
       res.status(200).json({
         success: true,
         message: "Space fetched Succesfully",

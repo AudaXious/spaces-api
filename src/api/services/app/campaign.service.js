@@ -44,15 +44,20 @@ const getAllSpacesCampaignService = async(spaceId)=>{
     return campaigns;
 }
 
-const getACampaignService = async(campaignId)=>{
+const getACampaignService = async(campaignNameOrId)=>{
      const campaign = await Campaigns.findOne({
-         uuid : campaignId,
+        $or : [
+          { uuid : campaignNameOrId,},
+          {title : { $regex: new RegExp(`^${campaignNameOrId}$`, "i") }}
+        ]
      });
      
      if(!campaign) throw ErrResourceNotFound;
      
      return campaign;
 }
+
+//
 const getCampaignsService = async()=>{
    
     const campaignsWithTaskCountAndSpaceDetails = await Campaigns.aggregate([

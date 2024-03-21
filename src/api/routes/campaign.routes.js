@@ -12,6 +12,6 @@ routes.get("/:spaceId/all", getAllSpacesCampaign)
 //
 routes.get("/all-campaigns", getCampaigns)
 //
-routes.get("/:campaignId", getACampaign)
+routes.get("/:campaignNameOrId", getACampaign)
 
 export default routes;

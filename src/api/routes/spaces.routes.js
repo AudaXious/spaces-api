@@ -26,7 +26,7 @@ routes.post("/join/:spaceId", authorizeUser, joinSpace)
 
 routes.get("/all", getAllSpaces)
 //
-routes.get("/s/:spaceId", getASpace);
+routes.get("/s/:spaceNameOrId", getASpace);
 //
 routes.get("/user/all", authorizeUser, getUserSpace);
 //

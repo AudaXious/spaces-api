@@ -66,9 +66,13 @@ const getAllSpacesService = async ()=>{
     return spaces;
 }
 
-const getASpaceService = async(spaceId)=>{
+const getASpaceService = async(spaceNameOrId)=>{
     const space = await Spaces.findOne({
-        uuid : spaceId,
+        $or : [
+            {uuid : spaceNameOrId,},
+            {title : { $regex: new RegExp(`^${spaceNameOrId}$`, "i") }}
+
+        ]
     })
 
     if(!space) throw ErrResourceNotFound;
