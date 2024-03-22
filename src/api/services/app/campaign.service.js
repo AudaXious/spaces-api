@@ -1,7 +1,6 @@
 import Campaigns from "../../../database/models/campaigns/campaign.js";
 import Spaces from "../../../database/models/spaces/spaces.js"
 import { ErrResourceAlreadyExists, ErrResourceNotFound, ErrUnauthorized } from "../../../errors/index.js"
-import Task from "../../../database/models/tasks/task.js";
 
 const createCampaignService = async(userReq, userId, spaceId)=>{
     const {title} = userReq;
@@ -37,24 +36,137 @@ const getAllSpacesCampaignService = async(spaceId)=>{
 
     if(!space) throw ErrResourceNotFound;
 
-    const campaigns = await Campaigns.find({
-        space_id : space._id,
-    });
+    const campaigns = await Campaigns.aggregate([
+      {
+        $match: {
+          space_id: space._id, // Match a specific campaign by its UUID
+        },
+      },
+      {
+        $lookup: {
+          from: 'tasks',
+          let: { campaign_uuid: '$uuid' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$campaign_uuid', '$$campaign_uuid'] },
+              },
+            },
+          ],
+          as: 'tasks',
+        },
+      },
+      {
+        $lookup: {
+          from: 'spaces',
+          localField: 'space_id',
+          foreignField: '_id',
+          as: 'space',
+        },
+      },
+      {
+        $unwind: '$space',
+      },
+      {
+        $addFields: {
+          space_title: '$space.title',
+          space_uuid: '$space.uuid',
+        },
+      },
+      {
+        $lookup: {
+          from: 'taskparticipants',
+          localField: 'uuid',
+          foreignField: 'campaign_uuid',
+          as: 'taskParticipants',
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          points: 1,
+          endDate: 1,
+          taskCount: { $size: '$tasks' },
+          space_title: 1,
+          space_uuid: 1,
+          tasks: 1, 
+          taskParticipantCount: { $size: '$taskParticipants' },
+          uuid : 1,
+          _id : 0,
+        },
+      },
+    ]);
 
     return campaigns;
 }
 
-const getACampaignService = async(campaignNameOrId)=>{
-     const campaign = await Campaigns.findOne({
-        $or : [
-          { uuid : campaignNameOrId,},
-          {title : { $regex: new RegExp(`^${campaignNameOrId}$`, "i") }}
-        ]
-     });
+const getACampaignService = async(campaignId)=>{
+
+     const campaign = await Campaigns.aggregate([
+      {
+        $match: {
+          uuid: Number(campaignId), // Match a specific campaign by its UUID
+        },
+      },
+      {
+        $lookup: {
+          from: 'tasks',
+          let: { campaign_uuid: '$uuid' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$campaign_uuid', '$$campaign_uuid'] },
+              },
+            },
+          ],
+          as: 'tasks',
+        },
+      },
+      {
+        $lookup: {
+          from: 'spaces',
+          localField: 'space_id',
+          foreignField: '_id',
+          as: 'space',
+        },
+      },
+      {
+        $unwind: '$space',
+      },
+      {
+        $addFields: {
+          space_title: '$space.title',
+          space_uuid: '$space.uuid',
+        },
+      },
+      {
+        $lookup: {
+          from: 'taskparticipants',
+          localField: 'uuid',
+          foreignField: 'campaign_uuid',
+          as: 'taskParticipants',
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          points: 1,
+          endDate: 1,
+          taskCount: { $size: '$tasks' },
+          space_title: 1,
+          space_uuid: 1,
+          tasks: 1,
+          taskParticipantCount: { $size: '$taskParticipants' }, 
+          uuid : 1,
+          _id : 0,
+        },
+      },
+    ]);
      
      if(!campaign) throw ErrResourceNotFound;
-     
-     return campaign;
+     return campaign[0];
 }
 
 //
@@ -93,6 +205,14 @@ const getCampaignsService = async()=>{
           },
         },
         {
+          $lookup: {
+            from: 'taskparticipants',
+            localField: 'uuid',
+            foreignField: 'campaign_uuid',
+            as: 'taskParticipants',
+          },
+        },
+        {
           $project: {
             title: 1,
             description: 1,
@@ -102,6 +222,7 @@ const getCampaignsService = async()=>{
             space_title: 1,
             space_uuid: 1,
             tasks: 1, 
+            taskParticipantCount: { $size: '$taskParticipants' },
             uuid : 1,
             _id : 0,
           },

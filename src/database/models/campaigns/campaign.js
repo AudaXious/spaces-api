@@ -1,12 +1,16 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import { v4 as uuidV4 } from "uuid";
+import autoIncrement from 'mongoose-sequence';
+
+// const connection = mongoose.createConnection('your-mongodb-uri');
+const increment = autoIncrement(mongoose);
 
 const campaignSchema = new Schema(
   {
     uuid: {
-      type: String,
-      required: true,
-      default: () => uuidV4(),
+      type: Number,
+      // required: true,
+      // default: () => uuidV4(),
       unique: true,
     },
     space_id: {
@@ -22,7 +26,6 @@ const campaignSchema = new Schema(
     title: {
       type: String,
       required: true,
-      unique: true,
     },
     description: {
       type: String,
@@ -51,6 +54,9 @@ const campaignSchema = new Schema(
     },
   }
 );
+
+campaignSchema.plugin(increment, { id: 'uuid_seq', inc_field: 'uuid' });
+
 
 const Campaigns = model("Campaigns", campaignSchema);
 

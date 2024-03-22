@@ -48,8 +48,8 @@ export const getAllSpacesCampaign = async (req, res) => {
 
 export const getACampaign = async (req, res) => {
     try {
-      const {campaignNameOrId} = req.params;
-      const campaigns = await CampaignService.getACampaignService(campaignNameOrId)
+      const {campaignId} = req.params;
+      const campaigns = await CampaignService.getACampaignService(campaignId)
       res.status(200).json({
         success: true,
         message: "Campaign Fetched",

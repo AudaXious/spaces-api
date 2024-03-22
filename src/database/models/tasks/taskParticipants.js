@@ -19,7 +19,7 @@ const taskParticipantsSchema = new Schema({
     required: true,
   },
   campaign_uuid: {
-    type: String,
+    type: Number,
     ref: "Campaigns",
     required: true,
   },
