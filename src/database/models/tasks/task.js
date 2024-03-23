@@ -21,7 +21,7 @@ const taskSchema = new Schema({
   action: {
     type: String,
     require: true,
-    enum: ["share", "post", "like", "repost", "follow"],
+    enum: ["share", "post", "like", "repost", "follow", "join"],
   },
   url :  {
     type : String,

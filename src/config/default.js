@@ -23,6 +23,9 @@ const CONFIG = {
     OAUTH_CLIENT_SECRET: process.env.OAUTH_CLIENT_SECRET,
     SESSION_SECRET: process.env.SESSION_SECRET,
     CLIENT_ROUTE : process.env.CLIENT_ROUTE,
+    CLOUD_NAME : process.env.CLOUD_NAME,
+    CLOUD_API_KEY : process.env.CLOUD_API_KEY,
+    CLOUD_API_SECRET : process.env.CLOUD_API_SECRET
   },
   production: {
     MONGODB_URI : process.env.MONGODB_URI_PROD,
@@ -39,6 +42,9 @@ const CONFIG = {
     SESSION_SECRET: process.env.SESSION_SECRET,
     HOST_ADDRESS: process.env.HOST_ADDRESS_PROD,
     CLIENT_ROUTE: process.env.CLIENT_ROUTE_PROD,
+    CLOUD_NAME : process.env.CLOUD_NAME_PROD,
+    CLOUD_API_KEY : process.env.CLOUD_API_KEY_PROD,
+    CLOUD_API_SECRET : process.env.CLOUD_API_SECRET_PROD,
   },
 };
 

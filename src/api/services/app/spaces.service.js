@@ -9,8 +9,19 @@ import {
     ErrUserNotFound, 
     ErrTwitterAccountNotLinked } from "../../../errors/index.js";
 import User from "../../../database/models/user/user.js";
+import uploadSingleMedia from "../storage/cloudinary.service.js";
+import Attachment from "../../../database/models/attachments/attachments.js";
 
-const createSpaceService = async (userReq, userId)=>{
+const createSpaceService = async (userReq, userId, req)=>{
+    console.log(req.files)
+    if(!req.files['icon'] || req.files['icon'].length === 0) throw new Error("Please add space Icon")
+
+    const bannerFile =req.files['banner'] ? req.files['banner'][0] : null; // Access the first file uploaded to the 'banner' field
+    const iconFile = req.files['icon'][0]; // Access the first file uploaded to the 'icon' field
+    
+
+    // console.log('Banner file:', bannerFile);
+    // console.log('Icon file:', iconFile);
     const  {title} = userReq;
 
     const user  = await User.findById(userId);
@@ -36,7 +47,50 @@ const createSpaceService = async (userReq, userId)=>{
         creator_uuid : user.uuid,
     })
 
-    return newSpace;
+    let bannerBuffer = bannerFile ? bannerFile.buffer : null;
+    
+    const [spaceIcon, spaceBanner] = await Promise.all([
+        await uploadSingleMedia(iconFile.buffer, "icon", newSpace._id),
+        bannerBuffer ? await uploadSingleMedia(bannerBuffer, "banner", newSpace._id) : null,
+    ])
+
+    const spaceIconObj = {
+        space_id : newSpace._id,
+        user_id : userId,
+        mime  : iconFile.mimetype,
+        url : spaceIcon.secure_url,
+        label : 'icon',
+    }
+
+    const attachmentsArray = [
+        spaceIconObj,
+    ]
+
+    if (spaceBanner !== null) {
+        const bannerFileMimeType = bannerFile.mimetype;
+        const spaceBannerSecureUrl = spaceBanner.secure_url;
+
+        const spaceBannerObj = {
+            space_id: newSpace._id,
+            user_id: userId,
+            mime: bannerFileMimeType,
+            url: spaceBannerSecureUrl,
+            label : 'banner',
+        };
+
+        attachmentsArray.push(spaceBannerObj);
+    }
+
+    const attachment = await Attachment.insertMany(attachmentsArray);
+
+    // console.log(spaceIcon);
+    // console.log("Space Banner",spaceBanner);
+    
+    return {
+        ...newSpace.toJSON(), 
+        iconUrl : attachment[0].url, 
+        bannerUrl : attachment[1] ? attachment[1].url : null, 
+    };
 }
 
 const joinSpaceService = async(spaceId, userId)=>{
@@ -62,10 +116,34 @@ const joinSpaceService = async(spaceId, userId)=>{
 };
 
 const getAllSpacesService = async ()=>{
-    const spaces = await Spaces.find();
+
+    const spaces = await Spaces.aggregate([
+        {
+            $lookup: {
+                from: "space_members", // Name of the SpacesMembers collection
+                localField: "uuid", // Field in the Spaces collection
+                foreignField: "space_uuid", // Field in the SpacesMembers collection
+                as: "spaceMembers" // Output array field
+            }
+        },
+        {
+            $addFields: {
+                spaceMembersCount: { $size: "$spaceMembers" } // Calculate the size of the spaceMembers array
+            }
+        },
+        {
+            $project: {
+                spaceMembers: 0,// Exclude the spaceMembers array from the final output
+                _id : 0
+            }
+        }
+    ]);
+
     return spaces;
 }
 
+
+//
 const getASpaceService = async(spaceNameOrId)=>{
     const space = await Spaces.findOne({
         $or : [
@@ -76,10 +154,14 @@ const getASpaceService = async(spaceNameOrId)=>{
     })
 
     if(!space) throw ErrResourceNotFound;
-
-    return space.toJSON();
+    const spaceMembersCount = await SpacesMembers.countDocuments(
+            {
+                space_uuid : space._id,
+            })
+    return {...space.toJSON(), spaceMembersCount : spaceMembersCount};
 }
 
+//
 const getUserSpaceService = async (userId) =>{
     const user = await User.findOne({
         uuid : userId
@@ -87,18 +169,44 @@ const getUserSpaceService = async (userId) =>{
     
     if(!user) throw ErrUserNotFound;
 
-    const spaces = await Spaces.find({
-        creator_id : user._id,
-    })
+
+    const spaces = await Spaces.aggregate([
+        {
+            $match: {
+                creator_id: user._id // Match spaces created by the user
+            }
+        },
+        {
+            $lookup: {
+                from: "space_members", 
+                localField: "uuid", 
+                foreignField: "space_uuid", 
+                as: "spaceMembers" 
+            }
+        },
+        {
+            $addFields: {
+                spaceMembersCount: { $size: "$spaceMembers" } // Calculate the size of the spaceMembers array
+            }
+        },
+        {
+            $project: {
+                spaceMembers: 0, // Exclude the spaceMembers array from the final output
+                _id : 0,
+            }
+        }
+    ]);
 
     if(!spaces) throw ErrResourceNotFound;
 
     return spaces;
 }
+
+//
 const getUserJoinedSpaceService = async (userId) =>{
     const spaces = await SpacesMembers.find({
         user_id : userId,
-    });
+    }).select("space_uuid -_id")
     return spaces;
 }
 

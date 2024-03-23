@@ -15,9 +15,13 @@ const fileFilter = (_, file, cb) => {
 
 const memoryStorage = multer.memoryStorage();
 
-const upload = multer({ storage: memoryStorage, fileFilter: fileFilter }).array(
-  "media",
-  4
-);
+const upload = multer({ 
+  storage: memoryStorage, 
+  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+}).fields([
+  { name: "banner", maxCount: 1 },
+  { name: "icon", maxCount: 1 },
+]);
 
 export default upload;

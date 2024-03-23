@@ -2,12 +2,12 @@ import Campaigns from "../../../database/models/campaigns/campaign.js";
 import { ErrResourceNotFound, ErrUnauthorized } from "../../../errors/index.js";
 import Task from "../../../database/models/tasks/task.js"
 import TaskParticipants from "../../../database/models/tasks/taskParticipants.js";
-import User from "../../../database/models/user/user.js";
 import { checkIfUserBelongToASpace } from "../../utils/space.utils.js";
 import { checkIfCampaignHasEnded } from "../../utils/campaign.utils.js";
-import { Types } from "mongoose";
 
 const createTaskService = async (userId, userReq, campaignId) => {
+  const {tasks} = userReq ?? [];
+
   const campaign = await Campaigns.findOne({
     uuid: campaignId,
   }).populate("space_id");
@@ -16,11 +16,13 @@ const createTaskService = async (userId, userReq, campaignId) => {
   
   if(campaign.space_id.creator_id.toString() !== userId) throw ErrUnauthorized;
   
-  const task = await Task.create({
+  const allTasks = tasks.map(t =>({
     campaign_id : campaign._id,
     campaign_uuid : campaign.uuid,
-    ...userReq,
-  });
+    ...t
+  }))
+
+  const task = await Task.insertMany(allTasks);
 
   return task;
 };
@@ -103,7 +105,19 @@ const participateInTasksService = async(taskId, campaignId, userId, spaceId)=>{
   return createParticipation;
 }
 
+const getUserCompletedTasksForCampaignService = async(userId, campaignId)=>{
+  const allCompletedTasks = await TaskParticipants.find({
+    campaign_uuid : Number(campaignId),
+    user_id : userId
+  }).select("uuid");
+
+  return allCompletedTasks;
+
+
+}
+
 export const TaskService ={
     createTaskService,
     participateInTasksService,
+    getUserCompletedTasksForCampaignService,
 }

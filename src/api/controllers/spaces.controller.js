@@ -5,7 +5,7 @@ export const createSpace = async (req, res) => {
     try {
       const userReq = req.body;
       const {_id} = req.user;
-      const space = await SpaceService.createSpaceService(userReq, _id,);
+      const space = await SpaceService.createSpaceService(userReq, _id, req);
       res.status(200).json({
         success: true,
         message: "Space created",

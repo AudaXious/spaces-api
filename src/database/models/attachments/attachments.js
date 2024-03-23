@@ -1,19 +1,16 @@
 import { Schema, model } from "mongoose";
-// import { v4 as uuidV4 } from "uuid";
 
 const attachmentSchema = new Schema(
   {
-    spaceId: {
+    space_id: {
       type: Schema.Types.ObjectId,
       ref: "Spaces",
       required: true,
-      unique: true,
     },
-    userId: {
+    user_id: {
       type: Schema.Types.ObjectId,
       ref: "Users",
       required: true,
-      unique: true,
     },
     mime: {
       type: String,
@@ -23,6 +20,11 @@ const attachmentSchema = new Schema(
       type: String,
       required: true,
     },
+    label : {
+      type : String,
+      require : true,
+
+    }
   },
   {
     timestamps: true,
@@ -39,6 +41,6 @@ const attachmentSchema = new Schema(
   }
 );
 
-const Attachment = model("Users", attachmentSchema);
+const Attachment = model("Attachments", attachmentSchema);
 
 export default Attachment;

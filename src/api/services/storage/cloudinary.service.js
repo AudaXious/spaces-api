@@ -27,31 +27,18 @@ const uploadToCloudinary = async (imagePath, filename) => {
   });
 };
 
-const uploadMedia = async (req, imagePath, imagePrefix) => {
+const uploadSingleMedia = async (buffer, imagePath, imagePrefix) => {
   try {
-    const files = req.files;
-    if (files.length < 1) throw new Error("No media");
-    let imageUrls = [];
-    
-    //
-    for (let i = 0; i < files.length; i++) {
-      let f = files[i];
-      let imageName;
-      
-      imageName = imagePrefix;
-      if(files.length > 1){
-        imageName = `${imagePrefix}[${i}]`;
-      }
+      if (buffer === null) return;
       const url = await uploadToCloudinary(
-        f.buffer,
-        `${imagePath}/${imageName}`
+        buffer,
+        `${imagePath}/${imagePrefix}`
       );
-      imageUrls.push({url : url.secure_url, mime : f.mimetype});
-    }
-    return imageUrls;
+   
+      return url;
   } catch (error) {
     console.log("File could not be uploaded:" + error.message);
   }
 };
 
-export default uploadMedia;
+export default uploadSingleMedia;
