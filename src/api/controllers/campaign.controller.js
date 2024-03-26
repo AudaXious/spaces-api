@@ -2,12 +2,13 @@ import { CampaignService } from "../services/app/campaign.service.js";
 import { getErrorMessage } from "../../errors/index.js";
 
 
-export const createCampaign = async (req, res) => {
+export const createCampaignAndTasks = async (req, res) => {
     try {
       const userId = req.user._id;
       const userReq = req.body;
+      const file = req.files
       const {spaceId} = req.params;
-      const campaign = await CampaignService.createCampaignService(userReq, userId, spaceId)
+      const campaign = await CampaignService.createCampaignAndTasksService(userReq, userId, spaceId, file)
       res.status(200).json({
         success: true,
         message: "Campaign Created",

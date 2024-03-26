@@ -8,6 +8,7 @@ export const ErrInvalidOTP = new Error("Invalid OTP");
 //406
 export const ErrMissingKeyFields = new Error("Missing Key Fields");
 export const ErrMissingHeader = new Error("Missing request header")
+export const ErrInvalidDateSelection = new Error("Date selection is not valid")
 
 //409
 export const ErrEmailAlreadyExists = new Error("Email already exists");
@@ -65,6 +66,7 @@ export const getErrorMessage = (error) => {
 
         case ErrMissingKeyFields:
         case ErrMissingHeader:
+        case ErrInvalidDateSelection:
             code = 406;
             break;
 

@@ -1,9 +1,17 @@
+import Attachment from "../../../database/models/attachments/attachments.js";
 import Campaigns from "../../../database/models/campaigns/campaign.js";
 import Spaces from "../../../database/models/spaces/spaces.js"
-import { ErrResourceAlreadyExists, ErrResourceNotFound, ErrUnauthorized } from "../../../errors/index.js"
+import Task from "../../../database/models/tasks/task.js"
+import { ErrInvalidDateSelection, ErrResourceAlreadyExists, ErrResourceNotFound, ErrUnauthorized, } from "../../../errors/index.js"
+import uploadSingleMedia from "../storage/cloudinary.service.js";
 
-const createCampaignService = async(userReq, userId, spaceId)=>{
+
+const createCampaignAndTasksService = async(userReq, userId, spaceId, file)=>{
     const {title} = userReq;
+    const {tasks, ...campaignData} = userReq;
+
+    if(campaignData.startDate > campaignData.endDate) throw ErrInvalidDateSelection;
+
     const space = await Spaces.findOne({
        uuid : spaceId
     }).populate("creator_id")
@@ -20,12 +28,33 @@ const createCampaignService = async(userReq, userId, spaceId)=>{
     if(isCampaign) throw ErrResourceAlreadyExists;
 
     const campaign = await Campaigns.create({
-        ...userReq,
+        ...campaignData,
         space_id : space._id,
         space_uuid : space.uuid
     });
 
-    return campaign.toJSON();
+    let campaignIcon
+    if(file['icon'] && file['icon'].length > 0) {
+      console.log("Uploading Campaign Icon");
+       campaignIcon = await uploadSingleMedia(file["icon"][0].buffer, "icon", campaign._id)
+    }
+
+    await Attachment.create({
+      item_id : campaign._id,
+      user_id : userId,
+      mime : file["icon"][0].mimetype,
+      url : campaignIcon.secure_url,
+    });
+
+    const allTasks = tasks.map(t =>({
+      campaign_id : campaign._id,
+      campaign_uuid : campaign.uuid,
+      ...t
+    }))
+
+    const newTasks = await Task.insertMany(allTasks);
+
+    return {campaign : campaign.toJSON(), tasks : newTasks};
     
 }
 
@@ -233,7 +262,7 @@ const getCampaignsService = async()=>{
 }
 
 export const  CampaignService = {
-    createCampaignService,
+    createCampaignAndTasksService,
     getAllSpacesCampaignService,
     getACampaignService,
     getCampaignsService

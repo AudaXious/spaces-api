@@ -2,9 +2,8 @@ import { Schema, model } from "mongoose";
 
 const attachmentSchema = new Schema(
   {
-    space_id: {
+    item_id: {
       type: Schema.Types.ObjectId,
-      ref: "Spaces",
       required: true,
     },
     user_id: {

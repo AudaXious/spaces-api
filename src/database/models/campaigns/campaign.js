@@ -35,6 +35,10 @@ const campaignSchema = new Schema(
       type: Number,
       required: true,
     },
+    startDate : {
+      type : Date,
+      required : true,
+    },
     endDate : {
       type : Date,
       required : true,

@@ -13,7 +13,6 @@ import uploadSingleMedia from "../storage/cloudinary.service.js";
 import Attachment from "../../../database/models/attachments/attachments.js";
 
 const createSpaceService = async (userReq, userId, req)=>{
-    console.log(req.files)
     if(!req.files['icon'] || req.files['icon'].length === 0) throw new Error("Please add space Icon")
 
     const bannerFile =req.files['banner'] ? req.files['banner'][0] : null; // Access the first file uploaded to the 'banner' field
@@ -55,7 +54,7 @@ const createSpaceService = async (userReq, userId, req)=>{
     ])
 
     const spaceIconObj = {
-        space_id : newSpace._id,
+        item_id : newSpace._id,
         user_id : userId,
         mime  : iconFile.mimetype,
         url : spaceIcon.secure_url,
@@ -71,7 +70,7 @@ const createSpaceService = async (userReq, userId, req)=>{
         const spaceBannerSecureUrl = spaceBanner.secure_url;
 
         const spaceBannerObj = {
-            space_id: newSpace._id,
+            item_id: newSpace._id,
             user_id: userId,
             mime: bannerFileMimeType,
             url: spaceBannerSecureUrl,

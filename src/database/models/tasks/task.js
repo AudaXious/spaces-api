@@ -20,8 +20,13 @@ const taskSchema = new Schema({
   },
   action: {
     type: String,
-    require: true,
+    required: true,
     enum: ["share", "post", "like", "repost", "follow", "join"],
+  },
+  media: {
+    type: String,
+    required: true,
+    enum: ["audaxious", "twitter"],
   },
   url :  {
     type : String,
