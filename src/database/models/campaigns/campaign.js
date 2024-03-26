@@ -34,6 +34,7 @@ const campaignSchema = new Schema(
     points: {
       type: Number,
       required: true,
+      default : 0,
     },
     startDate : {
       type : Date,

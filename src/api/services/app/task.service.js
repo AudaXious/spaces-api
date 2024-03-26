@@ -6,7 +6,7 @@ import { checkIfUserBelongToASpace } from "../../utils/space.utils.js";
 import { checkIfCampaignHasEnded } from "../../utils/campaign.utils.js";
 
 const createTaskService = async (userId, userReq, campaignId) => {
-  const {tasks} = userReq ?? [];
+  const {tasks, points} = userReq;
 
   const campaign = await Campaigns.findOne({
     uuid: campaignId,
@@ -21,6 +21,10 @@ const createTaskService = async (userId, userReq, campaignId) => {
     campaign_uuid : campaign.uuid,
     ...t
   }))
+
+  await campaign.updateOne({
+    points : points
+  })
 
   const task = await Task.insertMany(allTasks);
 
