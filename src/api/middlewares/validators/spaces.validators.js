@@ -5,4 +5,5 @@ export const createSpaceValidator = Joi.object({
     description : Joi.string(),
     tags : Joi.array(),
     links : Joi.array(),
+    inviteCode : Joi.string().required(),
 });

@@ -11,17 +11,18 @@ import {
 import User from "../../../database/models/user/user.js";
 import uploadSingleMedia from "../storage/cloudinary.service.js";
 import Attachment from "../../../database/models/attachments/attachments.js";
+import { deleteInviteCode, validateInviteCode } from "../../utils/inviteCode.utils.js";
 
 const createSpaceService = async (userReq, userId, req)=>{
+    const  {title,inviteCode} = userReq;
+   
+    const invite_id = await validateInviteCode(inviteCode)
+
+    //
     if(!req.files['icon'] || req.files['icon'].length === 0) throw new Error("Please add space Icon")
 
     const bannerFile =req.files['banner'] ? req.files['banner'][0] : null; // Access the first file uploaded to the 'banner' field
     const iconFile = req.files['icon'][0]; // Access the first file uploaded to the 'icon' field
-    
-
-    // console.log('Banner file:', bannerFile);
-    // console.log('Icon file:', iconFile);
-    const  {title} = userReq;
 
     const user  = await User.findById(userId);
 
@@ -45,6 +46,8 @@ const createSpaceService = async (userReq, userId, req)=>{
         creator_id : userId,
         creator_uuid : user.uuid,
     })
+
+    await deleteInviteCode(invite_id);
 
     let bannerBuffer = bannerFile ? bannerFile.buffer : null;
     

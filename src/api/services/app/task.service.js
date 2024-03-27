@@ -1,5 +1,5 @@
 import Campaigns from "../../../database/models/campaigns/campaign.js";
-import { ErrResourceNotFound, ErrUnauthorized } from "../../../errors/index.js";
+import { ErrMissingKeyFields, ErrResourceNotFound, ErrUnauthorized, ErrInvalidTaskData, ErrAlreadyParticipated } from "../../../errors/index.js";
 import Task from "../../../database/models/tasks/task.js"
 import TaskParticipants from "../../../database/models/tasks/taskParticipants.js";
 import { checkIfUserBelongToASpace } from "../../utils/space.utils.js";
@@ -35,6 +35,7 @@ const participateInTasksService = async(taskId, campaignId, userId, spaceId)=>{
 
   await checkIfCampaignHasEnded(campaignId);
 
+  const userID = await checkIfUserBelongToASpace(userId, spaceId)
   // fetches current task in view if exists
   // also fetches the count of tasks present in the campaign in view
   const result = await Task.aggregate([
@@ -72,7 +73,7 @@ const participateInTasksService = async(taskId, campaignId, userId, spaceId)=>{
   if (result.length === 0 || !result[0].task) throw ErrResourceNotFound;
 
 
-  const userID = await checkIfUserBelongToASpace(userId, spaceId)
+
   console.log("Userid", userID)
 
 
@@ -120,8 +121,48 @@ const getUserCompletedTasksForCampaignService = async(userId, campaignId)=>{
 
 }
 
+const participateInAllTasksService = async(userId, campaignId,tasks, spaceId)=>{
+  
+  await checkIfCampaignHasEnded(campaignId);
+
+  // await checkIfUserBelongToASpace(userId, spaceId)
+
+
+  const result = await Task.find({
+    campaign_uuid : campaignId,
+  })
+
+
+  if(result.length !== tasks.length) throw ErrInvalidTaskData;
+
+  const participationStatus = await TaskParticipants.findOne({
+    user_id :userId,
+    campaign_uuid : campaignId,
+  })
+
+  if(participationStatus) throw ErrAlreadyParticipated;
+
+  const dbTaskIds = result.map(task => task.uuid);
+  const isValidTaskList = tasks.every(id => dbTaskIds.includes(id.uuid));
+
+  if(!isValidTaskList) throw ErrInvalidTaskData;
+
+  const allCompletedTasks = result.map(t => ({
+    user_id : userId,
+    task_id : t._id,
+    task_uuid : t.uuid,
+    campaign_uuid : t.campaign_uuid,
+  }))
+
+  
+  const participateInMultipleTasks = await TaskParticipants.create(allCompletedTasks)
+
+  return {taskCompleted : true, };
+}
+
 export const TaskService ={
     createTaskService,
     participateInTasksService,
     getUserCompletedTasksForCampaignService,
+    participateInAllTasksService, 
 }

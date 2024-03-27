@@ -3,6 +3,8 @@ export const ErrInvalidEmail = new Error("Invalid email");
 export const ErrInvalidPassword = new Error("Invalid password");
 export const ErrTokenIsRequired = new Error("User authentication token is required");
 export const ErrInvalidOTP = new Error("Invalid OTP");
+export const ErrInvalidTaskData = new Error("Invalid Task Data");
+export const ErrInvalidInviteCode = new Error("Invalid invite code");
 
 
 //406
@@ -17,6 +19,7 @@ export const ErrUserAlreadyHasUsername = new Error("User already has a username"
 export const ErrAlreadyJoined = new Error("User is a member of this space");
 export const ErrUsernameAlreadyExist = new Error("Username already exists");
 export const ErrSpaceAlreadyExists = new Error("Space already exists");
+export const ErrAlreadyParticipated = new Error("User already participated in one of this campaigns tasks...");
 
 //404
 export const ErrResourceNotFound = new Error("Resource not found");
@@ -46,6 +49,8 @@ export const getErrorMessage = (error) => {
         case ErrInvalidPassword:
         case ErrTokenIsRequired:
         case ErrInvalidOTP:
+        case ErrInvalidTaskData:
+        case ErrInvalidInviteCode:
             code = 400;
             break;
         
@@ -76,6 +81,7 @@ export const getErrorMessage = (error) => {
         case ErrUserAlreadyHasUsername:            
         case ErrUsernameAlreadyExist:            
         case ErrSpaceAlreadyExists:            
+        case ErrAlreadyParticipated:            
             code = 409;
             break;
 

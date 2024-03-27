@@ -11,5 +11,14 @@ export const createTaskValidator = joi.object({
      ).required(),
 });
 
+//
+export const participateInTaskValidator = joi.object({
+    tasks : joi.array().items(
+        joi.object({
+         uuid: joi.string().required(),
+        })
+     ).required(),
+});
+
 
 
