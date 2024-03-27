@@ -20,11 +20,13 @@ export const ErrAlreadyJoined = new Error("User is a member of this space");
 export const ErrUsernameAlreadyExist = new Error("Username already exists");
 export const ErrSpaceAlreadyExists = new Error("Space already exists");
 export const ErrAlreadyParticipated = new Error("User already participated in one of this campaigns tasks...");
+export const ErrPointsAlreadyClaimed = new Error("User already claimed campaign Points...");
+
 
 //404
 export const ErrResourceNotFound = new Error("Resource not found");
 export const ErrUserNotFound = new Error("No user found");
-export const ErrFearNotFound = new Error("Fear not found");
+export const ErrMemberNotFound = new Error("Membership data not found");
 export const ErrCommunityNotFound = new Error("Community not found");
 export const ErrForumNotFound = new Error("Forum not found");
 
@@ -63,7 +65,7 @@ export const getErrorMessage = (error) => {
 
         case ErrResourceNotFound:
         case ErrUserNotFound:
-        case ErrFearNotFound:
+        case ErrMemberNotFound:
         case ErrCommunityNotFound:
         case ErrForumNotFound:
             code = 404;
@@ -82,6 +84,7 @@ export const getErrorMessage = (error) => {
         case ErrUsernameAlreadyExist:            
         case ErrSpaceAlreadyExists:            
         case ErrAlreadyParticipated:            
+        case ErrPointsAlreadyClaimed:            
             code = 409;
             break;
 

@@ -7,6 +7,7 @@ import profileRoutes from "./routes/profile.routes.js";
 import twitterRoutes from "./routes/twitter.routes.js";
 import campaignRoutes from "./routes/campaign.routes.js";
 import taskRoutes from "./routes/task.routes.js";
+import pointRoutes from "./routes/points.routes.js";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(authorizeUser);
 app.use('/twitter', twitterRoutes )
 app.use('/profile', profileRoutes)
 app.use('/task', taskRoutes)
+app.use('/points', pointRoutes)
 
 export default app;

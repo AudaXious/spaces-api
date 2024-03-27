@@ -1,22 +1,15 @@
 import { Schema, model } from "mongoose";
-import { v4 as uuidV4 } from "uuid";
 
 const pointSchema = new Schema({
-  uuid: {
-    type: String,
+  user_id : {
+    type : Schema.Types.ObjectId,
+    ref : "Users",
     required: true,
-    default: () => uuidV4(),
-    unique: true,
-  },
-  user_id: {
-    type: String,
-    ref: "Users",
-    required: true,
-    unique : true,
   },
   points: {
     type: Number,
-    require: true,
+    required: true,
+    default : 0
   },
 },
   {
@@ -33,6 +26,25 @@ const pointSchema = new Schema({
     },
   }
 );
+
+pointSchema.statics.updatePoints = async function(userId, newPoints) {
+  try {
+    const existingPoints = await this.findOne({ user_id: userId });
+
+    if (existingPoints) {
+      existingPoints.points += newPoints;
+      await existingPoints.save();
+      return existingPoints;
+    } else {
+      const newPoint = new this({ user_id: userId, points: newPoints });
+      await newPoint.save();
+      return newPoint;
+    }
+  } catch (error) {
+    console.error("Error updating points:", error);
+    throw error;
+  }
+};
 
 const Points = model("Points", pointSchema);
 
