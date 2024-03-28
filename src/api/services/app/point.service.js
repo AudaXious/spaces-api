@@ -40,7 +40,7 @@ const claimTasksPointsService = async(userId, campaignId)=>{
               space_id: campaign.space_id,
             },
             {
-              $inc: { points: 20 } // Increment points by 20 (or any other value)
+              $inc: { points: campaign.points } // Increment points by 20 (or any other value)
             },
             {
               upsert: true, // Create a new document if no document matches the query
