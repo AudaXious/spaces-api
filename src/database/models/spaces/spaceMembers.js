@@ -17,6 +17,12 @@ const spaceMemberSchema = new Schema({
     ref: "Users",
     required: true,
   },
+  role : {
+    type : String,
+    enum : ["member", "owner"],
+    default : "member",
+    required : true,
+  }
 },
   {
     timestamps: true,
