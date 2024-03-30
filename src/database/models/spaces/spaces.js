@@ -42,6 +42,11 @@ const spaceSchema = new Schema({
     type : String,
     enum : ["defi", "gaminng"]
   },
+  isVerified : {
+    type : Boolean,
+    default : false,
+    required : true,
+  }
 },
   {
     timestamps: true,
@@ -68,6 +73,8 @@ spaceSchema.pre('remove', async function(next) {
     next(err);
   }
 });
+
+
 
 const Spaces = model("Spaces", spaceSchema);
 
