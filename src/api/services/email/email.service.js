@@ -1,13 +1,13 @@
 import nodemailer from "nodemailer";
-
+import CONFIG from "../../../config/default.js"
 export const sendToMail = async (options) => {
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
+    host: CONFIG.EMAIL_HOST,
     port: 587,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-      apiKey: process.env.EMAIL_APIKEY,
+      user: CONFIG.EMAIL_USER,
+      pass: CONFIG.EMAIL_PASS,
+      // apiKey: process.env.EMAIL_APIKEY,
     },
     tls: { rejectUnauthorized: false },
   });

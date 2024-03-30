@@ -7,7 +7,7 @@ export const validateInviteCode = async(code)=>{
  const codePrefix = codeData[0]
 
  const inviteData = await Invites.findOne({
-    id : codeNumber,
+    serial : codeNumber,
     prefix :{ $regex: new RegExp(`^${codePrefix}$`, "i") },
  })
 

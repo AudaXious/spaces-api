@@ -1,13 +1,14 @@
-import mongoose, { Schema, model } from "mongoose";
-import autoIncrement from 'mongoose-sequence';
+import { Schema, model } from "mongoose";
 
-const increment = autoIncrement(mongoose);
 
 const inviteSchema = new Schema(
   {
-    id : {
+    serial : {
         type : Number,
         unique : true,
+        default : () =>{
+          return Math.floor(Math.random() * 9000) + 1000;
+        },
     },
     prefix : {
         type : String,
@@ -21,10 +22,9 @@ const inviteSchema = new Schema(
   }
 );
 
-inviteSchema.plugin(increment, {id : "inviteCode_id",inc_field : "id"});
 
 inviteSchema.virtual('code').get(function () {
-    return `${this.prefix}-${this.id}`; // Access the generated _id and prepend the prefix
+    return `${this.prefix}-${this.serial}`; // Access the generated _id and prepend the prefix
   });
   
 const Invites = model("InvitesCodes", inviteSchema);
@@ -43,8 +43,6 @@ export async function createDefaultInviteCodes() {
       console.error("Error creating default invite codes:", err);
     }
   }
-
-
 
 
 export default Invites;
