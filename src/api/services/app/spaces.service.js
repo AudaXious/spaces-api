@@ -129,105 +129,75 @@ const joinSpaceService = async(spaceId, userId)=>{
 //
 const getAllSpacesService = async ()=>{
 
-    // const spaces = await Spaces.aggregate([
-    //     {
-    //         $lookup: {
-    //             from: "space_members", // Name of the SpacesMembers collection
-    //             localField: "uuid", // Field in the Spaces collection
-    //             foreignField: "space_uuid", // Field in the SpacesMembers collection
-    //             as: "spaceMembers" // Output array field
-    //         }
-    //     },
-    //     {
-    //         $addFields: {
-    //             spaceMembersCount: { $size: "$spaceMembers" }, // Calculate the size of the spaceMembers array
-    //         }
-    //     },
-    //     {
-    //         $project: {
-    //             spaceMembers: 0,// Exclude the spaceMembers array from the final output
-    //             _id : 0
-    //         }
-    //     }
-    // ]);
-
-    const spaces = await Spaces.aggregate([
-        {
-          $lookup: {
-            from: "space_members",
-            localField: "uuid",
-            foreignField: "space_uuid",
-            as: "spaceMembers"
-          }
-        },
-        {
-          $addFields: {
-            spaceMembersCount: { $size: "$spaceMembers" }
-          }
-        },
-        {
-          $project: {
-            spaceMembers: 0,
-            _id: 0
-          }
-        },
-        {
-          $lookup: {
-            from: "attachments",
-            let: { space_uuid: "$_id" },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ["$item_id", "$$space_uuid"] },
-                      { $in: ["$label", ["icon", "banner"]] }
-                    ]
-                  }
-                }
-              },
-              {
-                $group: {
-                  _id: "$label",
-                  url: { $first: "$url" }
-                }
-              },
-              {
-                $project: {
-                  _id: 0,
-                  label: "$_id",
-                  url: 1
-                }
+  const spaces = await Spaces.aggregate([
+    {
+      $lookup: {
+        from: "space_members",
+        localField: "uuid",
+        foreignField: "space_uuid",
+        as: "spaceMembers"
+      }
+    },
+    {
+      $addFields: {
+        spaceMembersCount: { $size: "$spaceMembers" }
+      }
+    },
+    {
+      $lookup: {
+        from: "attachments",
+        let: { spaceId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$item_id", "$$spaceId"] },
+                  { $in: ["$label", ["icon", "banner"]] }
+                ]
               }
-            ],
-            as: "attachments"
-          }
-        },
-        {
-          $addFields: {
-            iconUrl: {
-              $cond: [
-                { $eq: [{ $size: "$attachments" }, 0] },
-                null,
-                { $arrayElemAt: ["$attachments.url", 0] }
-              ]
-            },
-            bannerUrl: {
-              $cond: [
-                { $eq: [{ $size: "$attachments" }, 0] },
-                null,
-                { $arrayElemAt: ["$attachments.url", 1] }
-              ]
             }
           }
+        ],
+        as: "attachments"
+      }
+    },
+    {
+      $addFields: {
+        iconUrl: {
+          $cond: [
+            { $gt: [{ $size: "$attachments" }, 0] },
+            {
+              $arrayElemAt: [
+                "$attachments.url",
+                { $indexOfArray: ["$attachments.label", "icon"] }
+              ]
+            },
+            null
+          ]
         },
-        {
-          $project: {
-            attachments: 0
-          }
+        bannerUrl: {
+          $cond: [
+            { $gt: [{ $size: "$attachments" }, 0] },
+            {
+              $arrayElemAt: [
+                "$attachments.url",
+                { $indexOfArray: ["$attachments.label", "banner"] }
+              ]
+            },
+            null
+          ]
         }
-      ]);
-
+      }
+    },
+    {
+      $project: {
+        attachments: 0,
+        spaceMembers : 0,
+        _id : 0
+      }
+    }
+  ]);
     
 
     return spaces;
@@ -360,79 +330,72 @@ const getUserSpaceService = async (userId) =>{
             }
         },
         {
-            $lookup: {
-                from: "space_members", 
-                localField: "uuid", 
-                foreignField: "space_uuid", 
-                as: "spaceMembers" 
-            }
+          $lookup: {
+            from: "space_members",
+            localField: "uuid",
+            foreignField: "space_uuid",
+            as: "spaceMembers"
+          }
         },
         {
-            $addFields: {
-                spaceMembersCount: { $size: "$spaceMembers" } // Calculate the size of the spaceMembers array
-            }
+          $addFields: {
+            spaceMembersCount: { $size: "$spaceMembers" }
+          }
         },
         {
-            $project: {
-                spaceMembers: 0, // Exclude the spaceMembers array from the final output
-                _id : 0,
-            }
-        },
-        {
-            $lookup: {
-              from: "attachments",
-              let: { space_uuid: "$_id" },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        { $eq: ["$item_id", "$$space_uuid"] },
-                        { $in: ["$label", ["icon", "banner"]] }
-                      ]
-                    }
-                  }
-                },
-                {
-                  $group: {
-                    _id: "$label",
-                    url: { $first: "$url" }
-                  }
-                },
-                {
-                  $project: {
-                    _id: 0,
-                    label: "$_id",
-                    url: 1
+          $lookup: {
+            from: "attachments",
+            let: { spaceId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$item_id", "$$spaceId"] },
+                      { $in: ["$label", ["icon", "banner"]] }
+                    ]
                   }
                 }
-              ],
-              as: "attachments"
-            }
-          },
-          {
-            $addFields: {
-              iconUrl: {
-                $cond: [
-                  { $eq: [{ $size: "$attachments" }, 0] },
-                  null,
-                  { $arrayElemAt: ["$attachments.url", 0] }
-                ]
-              },
-              bannerUrl: {
-                $cond: [
-                  { $eq: [{ $size: "$attachments" }, 0] },
-                  null,
-                  { $arrayElemAt: ["$attachments.url", 1] }
-                ]
               }
-            }
-          },
-          {
-            $project: {
-              attachments: 0
+            ],
+            as: "attachments"
+          }
+        },
+        {
+          $addFields: {
+            iconUrl: {
+              $cond: [
+                { $gt: [{ $size: "$attachments" }, 0] },
+                {
+                  $arrayElemAt: [
+                    "$attachments.url",
+                    { $indexOfArray: ["$attachments.label", "icon"] }
+                  ]
+                },
+                null
+              ]
+            },
+            bannerUrl: {
+              $cond: [
+                { $gt: [{ $size: "$attachments" }, 0] },
+                {
+                  $arrayElemAt: [
+                    "$attachments.url",
+                    { $indexOfArray: ["$attachments.label", "banner"] }
+                  ]
+                },
+                null
+              ]
             }
           }
+        },
+        {
+          $project: {
+            attachments: 0,
+            spaceMembers : 0,
+            _id : 0
+          }
+        }
     ]);
 
     if(!spaces) throw ErrResourceNotFound;
