@@ -194,6 +194,7 @@ const getAllSpacesService = async ()=>{
       $project: {
         attachments: 0,
         spaceMembers : 0,
+        creator_id : 0,
         _id : 0
       }
     }
