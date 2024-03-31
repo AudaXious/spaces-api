@@ -90,6 +90,7 @@ const getAllSpacesCampaignService = async(spaceId)=>{
         $addFields: {
           space_title: '$space.title',
           space_uuid: '$space.uuid',
+          isVerified: '$space.isVerified'
         },
       },
       {
@@ -101,14 +102,32 @@ const getAllSpacesCampaignService = async(spaceId)=>{
         },
       },
       {
+        $lookup: {
+          from: 'attachments',
+          localField: '_id',
+          foreignField: 'item_id',
+          as: 'attachments',
+        }
+      },
+      {
+        $unwind: '$attachments',
+      },
+      {
+        $addFields: {
+          iconUrl : '$attachments.url'
+        },
+      },
+      {
         $project: {
           title: 1,
           description: 1,
           points: 1,
           endDate: 1,
+          iconUrl : 1,
           taskCount: { $size: '$tasks' },
           space_title: 1,
           space_uuid: 1,
+          isVerified : 1,
           tasks: 1, 
           taskParticipantCount: { $size: '$taskParticipants' },
           uuid : 1,
@@ -157,6 +176,7 @@ const getACampaignService = async(campaignId)=>{
         $addFields: {
           space_title: '$space.title',
           space_uuid: '$space.uuid',
+          isVerified: '$space.isVerified'
         },
       },
       {
@@ -168,14 +188,32 @@ const getACampaignService = async(campaignId)=>{
         },
       },
       {
+        $lookup: {
+          from: 'attachments',
+          localField: '_id',
+          foreignField: 'item_id',
+          as: 'attachments',
+        }
+      },
+      {
+        $unwind: '$attachments',
+      },
+      {
+        $addFields: {
+          iconUrl : '$attachments.url'
+        },
+      },
+      {
         $project: {
           title: 1,
           description: 1,
           points: 1,
           endDate: 1,
+          iconUrl: 1,
           taskCount: { $size: '$tasks' },
           space_title: 1,
           space_uuid: 1,
+          isVerified : 1,
           tasks: 1,
           taskParticipantCount: { $size: '$taskParticipants' }, 
           uuid : 1,
@@ -221,6 +259,7 @@ const getCampaignsService = async()=>{
           $addFields: {
             space_title: '$space.title',
             space_uuid: '$space.uuid',
+            isVerified: '$space.isVerified'
           },
         },
         {
@@ -232,14 +271,29 @@ const getCampaignsService = async()=>{
           },
         },
         {
+          $lookup: {
+            from: 'attachments',
+            localField: '_id',
+            foreignField: 'item_id',
+            as: 'attachments',
+          }
+        },
+        {
+          $addFields: {
+            iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
+          },
+        },
+        {
           $project: {
             title: 1,
             description: 1,
             points: 1,
             endDate: 1,
+            iconUrl : 1,
             taskCount: { $size: '$tasks' },
             space_title: 1,
             space_uuid: 1,
+            isVerified : 1,
             tasks: 1, 
             taskParticipantCount: { $size: '$taskParticipants' },
             uuid : 1,
