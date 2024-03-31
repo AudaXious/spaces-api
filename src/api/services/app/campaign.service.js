@@ -109,12 +109,12 @@ const getAllSpacesCampaignService = async(spaceId)=>{
           as: 'attachments',
         }
       },
-      {
-        $unwind: '$attachments',
-      },
+      // {
+      //   $unwind: '$attachments',
+      // },
       {
         $addFields: {
-          iconUrl : '$attachments.url'
+          iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
         },
       },
       {
@@ -195,12 +195,12 @@ const getACampaignService = async(campaignId)=>{
           as: 'attachments',
         }
       },
-      {
-        $unwind: '$attachments',
-      },
+      // {
+      //   $unwind: '$attachments',
+      // },
       {
         $addFields: {
-          iconUrl : '$attachments.url'
+          iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
         },
       },
       {
