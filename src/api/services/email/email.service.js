@@ -7,13 +7,13 @@ export const sendToMail = async (options) => {
     auth: {
       user: CONFIG.EMAIL_USER,
       pass: CONFIG.EMAIL_PASS,
-      // apiKey: process.env.EMAIL_APIKEY,
+      apiKey: CONFIG.EMAIL_APIKEY,
     },
     tls: { rejectUnauthorized: false },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_SENDER,
+    from: CONFIG.EMAIL_SENDER,
     to: options.email,
     subject: options.subject,
     html: options.message,
