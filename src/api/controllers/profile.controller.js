@@ -26,7 +26,7 @@ export const createUsername = async (req, res) => {
   
 export const getUser = async (req, res) => {
     try {
-      const userId = req.user._id;
+      const userId = req.user.uuid;
       const user = await ProfileService.getUserService(userId);
       res.status(200).json({
         success: true,

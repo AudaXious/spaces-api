@@ -14,6 +14,7 @@ import {
 
 import { generateToken } from "../security/token.service.js";
 import Username from "../../../database/models/user/username.js";
+import Points from "../../../database/models/points/points.js";
 
 /**
  * @description  This method creates or login a User Account
@@ -30,6 +31,10 @@ const createUserOrLoginAccountService = async (userReq) => {
   if (!user){
     user = await User.create({
       email,
+    })
+
+    await Points.create({
+      user_id : user._id
     })
   }
 
@@ -137,6 +142,10 @@ const walletLogInService = async(walletId)=>{
       walletId : walletId,
       isVerified : true,
     });
+
+    await Points.create({
+      user_id : wallet._id
+    })
   };
 
   const payload = {
