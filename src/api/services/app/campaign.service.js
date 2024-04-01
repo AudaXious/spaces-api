@@ -93,14 +93,6 @@ const getAllSpacesCampaignService = async(spaceId)=>{
           isVerified: '$space.isVerified'
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'taskparticipants',
-      //     localField: 'uuid',
-      //     foreignField: 'campaign_uuid',
-      //     as: 'taskParticipants',
-      //   },
-      // },
       {
         $lookup: {
           from: 'claimedcampaignpoints',
@@ -117,9 +109,6 @@ const getAllSpacesCampaignService = async(spaceId)=>{
           as: 'attachments',
         }
       },
-      // {
-      //   $unwind: '$attachments',
-      // },
       {
         $addFields: {
           iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
@@ -187,14 +176,6 @@ const getACampaignService = async(campaignId)=>{
           isVerified: '$space.isVerified'
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'taskparticipants',
-      //     localField: 'uuid',
-      //     foreignField: 'campaign_uuid',
-      //     as: 'taskParticipants',
-      //   },
-      // },
       {
         $lookup: {
           from: 'claimedcampaignpoints',
@@ -211,9 +192,6 @@ const getACampaignService = async(campaignId)=>{
           as: 'attachments',
         }
       },
-      // {
-      //   $unwind: '$attachments',
-      // },
       {
         $addFields: {
           iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
@@ -278,14 +256,6 @@ const getCampaignsService = async()=>{
             isVerified: '$space.isVerified'
           },
         },
-        // {
-        //   $lookup: {
-        //     from: 'taskparticipants',
-        //     localField: 'uuid',
-        //     foreignField: 'campaign_uuid',
-        //     as: 'taskParticipants',
-        //   },
-        // },
         {
           $lookup: {
             from: 'claimedcampaignpoints',
