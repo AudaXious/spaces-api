@@ -93,11 +93,19 @@ const getAllSpacesCampaignService = async(spaceId)=>{
           isVerified: '$space.isVerified'
         },
       },
+      // {
+      //   $lookup: {
+      //     from: 'taskparticipants',
+      //     localField: 'uuid',
+      //     foreignField: 'campaign_uuid',
+      //     as: 'taskParticipants',
+      //   },
+      // },
       {
         $lookup: {
-          from: 'taskparticipants',
-          localField: 'uuid',
-          foreignField: 'campaign_uuid',
+          from: 'claimedcampaignpoints',
+          localField: '_id',
+          foreignField: 'campaign_id',
           as: 'taskParticipants',
         },
       },
@@ -179,11 +187,19 @@ const getACampaignService = async(campaignId)=>{
           isVerified: '$space.isVerified'
         },
       },
+      // {
+      //   $lookup: {
+      //     from: 'taskparticipants',
+      //     localField: 'uuid',
+      //     foreignField: 'campaign_uuid',
+      //     as: 'taskParticipants',
+      //   },
+      // },
       {
         $lookup: {
-          from: 'taskparticipants',
-          localField: 'uuid',
-          foreignField: 'campaign_uuid',
+          from: 'claimedcampaignpoints',
+          localField: '_id',
+          foreignField: 'campaign_id',
           as: 'taskParticipants',
         },
       },
@@ -262,11 +278,19 @@ const getCampaignsService = async()=>{
             isVerified: '$space.isVerified'
           },
         },
+        // {
+        //   $lookup: {
+        //     from: 'taskparticipants',
+        //     localField: 'uuid',
+        //     foreignField: 'campaign_uuid',
+        //     as: 'taskParticipants',
+        //   },
+        // },
         {
           $lookup: {
-            from: 'taskparticipants',
-            localField: 'uuid',
-            foreignField: 'campaign_uuid',
+            from: 'claimedcampaignpoints',
+            localField: '_id',
+            foreignField: 'campaign_id',
             as: 'taskParticipants',
           },
         },
