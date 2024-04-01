@@ -37,21 +37,48 @@ const createUsernameService = async (userName, userId) => {
 
 
 const getUserService = async (userId) => {
-  const user = await User.findOne({
-    _id : userId
-  })
-
-  if(!user) throw ErrUserNotFound;
   
-  const username = await Username.findOne({
-    user_id : userId,
-  });
-
-  return {
-    ...user.toJSON(), 
-    username : username ? username.username : null,
-    twitterUsername : username? username.twitterUsername : null,
+  const user = await User.aggregate([
+    { $match: { uuid: userId } },
+    {
+      $lookup: {
+        from: "usernames",
+        localField: "_id",
+        foreignField: "user_id",
+        as: "usernameData"
+      }
+    },
+    {
+      $lookup: {
+        from: "points",
+        localField: "_id",
+        foreignField: "user_id",
+        as: "pointsData"
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        uuid: 1,
+        socialId: 1,
+        walletId: 1,
+        fullName: 1,
+        email: 1,
+        isVerified: 1,
+        tags: 1,
+        links: 1,
+        username: { $cond: { if: { $eq: [{ $size: "$usernameData" }, 0] }, then: null, else: { $arrayElemAt: ["$usernameData.username", 0] } } },
+        twitterUsername: { $cond: { if: { $eq: [{ $size: "$usernameData" }, 0] }, then: null, else: { $arrayElemAt: ["$usernameData.twitterUsername", 0] } } },
+        points: { $cond: { if: { $eq: [{ $size: "$pointsData" }, 0] }, then: 0, else: { $arrayElemAt: ["$pointsData.points", 0] } } }
+      }
+    }
+  ]);
+  
+  if (!user || user.length === 0) {
+    throw ErrUserNotFound;
   }
+  
+  return user[0];
 };
 
 const changeUsernameService =  async (userReq, userId)=>{
