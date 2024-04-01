@@ -95,9 +95,9 @@ const getAllSpacesCampaignService = async(spaceId)=>{
       },
       {
         $lookup: {
-          from: 'taskparticipants',
-          localField: 'uuid',
-          foreignField: 'campaign_uuid',
+          from: 'claimedcampaignpoints',
+          localField: '_id',
+          foreignField: 'campaign_id',
           as: 'taskParticipants',
         },
       },
@@ -109,9 +109,6 @@ const getAllSpacesCampaignService = async(spaceId)=>{
           as: 'attachments',
         }
       },
-      // {
-      //   $unwind: '$attachments',
-      // },
       {
         $addFields: {
           iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
@@ -181,9 +178,9 @@ const getACampaignService = async(campaignId)=>{
       },
       {
         $lookup: {
-          from: 'taskparticipants',
-          localField: 'uuid',
-          foreignField: 'campaign_uuid',
+          from: 'claimedcampaignpoints',
+          localField: '_id',
+          foreignField: 'campaign_id',
           as: 'taskParticipants',
         },
       },
@@ -195,9 +192,6 @@ const getACampaignService = async(campaignId)=>{
           as: 'attachments',
         }
       },
-      // {
-      //   $unwind: '$attachments',
-      // },
       {
         $addFields: {
           iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
@@ -264,9 +258,9 @@ const getCampaignsService = async()=>{
         },
         {
           $lookup: {
-            from: 'taskparticipants',
-            localField: 'uuid',
-            foreignField: 'campaign_uuid',
+            from: 'claimedcampaignpoints',
+            localField: '_id',
+            foreignField: 'campaign_id',
             as: 'taskParticipants',
           },
         },
