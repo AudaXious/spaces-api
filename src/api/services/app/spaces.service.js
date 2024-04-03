@@ -12,9 +12,10 @@ import User from "../../../database/models/user/user.js";
 import uploadSingleMedia from "../storage/cloudinary.service.js";
 import Attachment from "../../../database/models/attachments/attachments.js";
 import { deleteInviteCode, validateInviteCode } from "../../utils/inviteCode.utils.js";
+import Links from "../../../database/models/links/links.js";
 
 const createSpaceService = async (userReq, userId, req)=>{
-    const  {title,inviteCode} = userReq;
+    const  {title,inviteCode, links} = userReq;
    
     const invite_id = await validateInviteCode(inviteCode)
 
@@ -46,6 +47,18 @@ const createSpaceService = async (userReq, userId, req)=>{
         creator_id : userId,
         creator_uuid : user.uuid,
     })
+
+    let allLinks = [];
+    
+    if(links.length > 0){
+        allLinks = links.map(link => ({
+           owner_id : user._id,
+           owner_uuid : user.uuid,
+           type : link.type,
+           url : link.url
+       }))
+    }
+    const spaceLinks = await Links.create(allLinks); 
 
     await deleteInviteCode(invite_id);
 
@@ -95,7 +108,8 @@ const createSpaceService = async (userReq, userId, req)=>{
     })
     
     return {
-        ...newSpace.toJSON(), 
+        ...newSpace.toJSON(),
+        links : spaceLinks, 
         iconUrl : attachment[0].url, 
         bannerUrl : attachment[1] ? attachment[1].url : null, 
     };
