@@ -38,6 +38,7 @@ const uploadSingleMedia = async (buffer, imagePath, imagePrefix) => {
       return url;
   } catch (error) {
     console.log("File could not be uploaded:" + error.message);
+    throw error.message;
   }
 };
 

@@ -60,6 +60,13 @@ const createSpaceService = async (userReq, userId, req)=>{
     }
     const spaceLinks = await Links.create(allLinks); 
 
+    await SpacesMembers.create({
+      space_id : newSpace._id,
+      space_uuid : newSpace.uuid,
+      user_id: user._id,
+      role : "owner",
+    })
+
     await deleteInviteCode(invite_id);
 
     let bannerBuffer = bannerFile ? bannerFile.buffer : null;
@@ -73,7 +80,7 @@ const createSpaceService = async (userReq, userId, req)=>{
         item_id : newSpace._id,
         user_id : userId,
         mime  : iconFile.mimetype,
-        url : spaceIcon.secure_url,
+        url : spaceIcon ? spaceIcon.secure_url : null,
         label : 'icon',
     }
 
@@ -83,7 +90,7 @@ const createSpaceService = async (userReq, userId, req)=>{
 
     if (spaceBanner !== null) {
         const bannerFileMimeType = bannerFile.mimetype;
-        const spaceBannerSecureUrl = spaceBanner.secure_url;
+        const spaceBannerSecureUrl = spaceBanner.secure_url ? spaceBanner.secure_url : null;
 
         const spaceBannerObj = {
             item_id: newSpace._id,
@@ -100,12 +107,7 @@ const createSpaceService = async (userReq, userId, req)=>{
 
     // console.log(spaceIcon);
     // console.log("Space Banner",spaceBanner);
-    await SpacesMembers.create({
-        space_id : newSpace._id,
-        space_uuid : newSpace.uuid,
-        user_id: user._id,
-        role : "owner",
-    })
+
     
     return {
         ...newSpace.toJSON(),
