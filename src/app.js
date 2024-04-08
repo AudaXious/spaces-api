@@ -8,7 +8,9 @@ import passport from "passport";
 import session from "express-session";
 import { default as connectMongoDBSession} from 'connect-mongodb-session';
 import CONFIG from "./config/default.js"
-import upload from "./api/middlewares/multer/multer.middleware.js"
+import upload from "./api/middlewares/multer/multer.middleware.js";
+import analyticsRoutes from "./analytics/analytics.js"
+
 const app = express();
 
 const MongoDBStore = connectMongoDBSession(session)
@@ -61,6 +63,7 @@ InitializePassport(CONFIG.OAUTH_CLIENT_ID, CONFIG.OAUTH_CLIENT_SECRET);
 
 app.use(upload);
 app.use("/api/v1", clientRoutes);
+app.use("/api/analytics", analyticsRoutes)
 
 //404 middleware for routes that does not exists on the server
 app.use(err404NotFound)
