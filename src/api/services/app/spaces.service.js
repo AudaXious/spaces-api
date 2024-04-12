@@ -12,9 +12,10 @@ import User from "../../../database/models/user/user.js";
 import uploadSingleMedia from "../storage/cloudinary.service.js";
 import Attachment from "../../../database/models/attachments/attachments.js";
 import { deleteInviteCode, validateInviteCode } from "../../utils/inviteCode.utils.js";
+import Links from "../../../database/models/links/links.js";
 
 const createSpaceService = async (userReq, userId, req)=>{
-    const  {title,inviteCode} = userReq;
+    const  {title,inviteCode, links} = userReq;
    
     const invite_id = await validateInviteCode(inviteCode)
 
@@ -47,6 +48,25 @@ const createSpaceService = async (userReq, userId, req)=>{
         creator_uuid : user.uuid,
     })
 
+    let allLinks = [];
+    
+    if(links.length > 0){
+        allLinks = links.map(link => ({
+           owner_id : user._id,
+           owner_uuid : user.uuid,
+           type : link.type,
+           url : link.url
+       }))
+    }
+    const spaceLinks = await Links.create(allLinks); 
+
+    await SpacesMembers.create({
+      space_id : newSpace._id,
+      space_uuid : newSpace.uuid,
+      user_id: user._id,
+      role : "owner",
+    })
+
     await deleteInviteCode(invite_id);
 
     let bannerBuffer = bannerFile ? bannerFile.buffer : null;
@@ -60,7 +80,7 @@ const createSpaceService = async (userReq, userId, req)=>{
         item_id : newSpace._id,
         user_id : userId,
         mime  : iconFile.mimetype,
-        url : spaceIcon.secure_url,
+        url : spaceIcon ? spaceIcon.secure_url : null,
         label : 'icon',
     }
 
@@ -70,7 +90,7 @@ const createSpaceService = async (userReq, userId, req)=>{
 
     if (spaceBanner !== null) {
         const bannerFileMimeType = bannerFile.mimetype;
-        const spaceBannerSecureUrl = spaceBanner.secure_url;
+        const spaceBannerSecureUrl = spaceBanner.secure_url ? spaceBanner.secure_url : null;
 
         const spaceBannerObj = {
             item_id: newSpace._id,
@@ -87,15 +107,11 @@ const createSpaceService = async (userReq, userId, req)=>{
 
     // console.log(spaceIcon);
     // console.log("Space Banner",spaceBanner);
-    await SpacesMembers.create({
-        space_id : newSpace._id,
-        space_uuid : newSpace.uuid,
-        user_id: user._id,
-        role : "owner",
-    })
+
     
     return {
-        ...newSpace.toJSON(), 
+        ...newSpace.toJSON(),
+        links : spaceLinks, 
         iconUrl : attachment[0].url, 
         bannerUrl : attachment[1] ? attachment[1].url : null, 
     };

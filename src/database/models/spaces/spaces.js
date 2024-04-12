@@ -2,6 +2,12 @@ import { Schema, model } from "mongoose";
 import { v4 as uuidV4 } from "uuid";
 import Campaigns from "../campaigns/campaign.js";
 
+
+export const tag = [
+  "DeFi", "NFT", "Metaverse", "Staking", "Meme", "Oracle", "DEX", "CEX", "DAO", 
+  "GameFi","P2E","Community","DeSo", "SocialFi", "AI", "AMM", "ERC-20", "SPL"
+]; 
+
 const spaceSchema = new Schema({
   uuid: {
     type: String,
@@ -32,15 +38,15 @@ const spaceSchema = new Schema({
     type : [String],
     default : [],
   },
-  links : {
-    type : [String],
-    default : [],
-  },
+  // links : {
+  //   type : [String],
+  //   default : [],
+  // },
   bannerUrl : String,
   iconUrl :  String,
   category : {
     type : String,
-    enum : ["defi", "gaminng"]
+    enum : [...tag]
   },
   isVerified : {
     type : Boolean,
