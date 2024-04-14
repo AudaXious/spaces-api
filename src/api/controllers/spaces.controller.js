@@ -1,5 +1,6 @@
 import { SpaceService } from "../services/app/spaces.service.js";
 import { getErrorMessage } from "../../errors/index.js";
+import { verifyAuthToken } from "../services/security/token.service.js";
 
 export const createSpace = async (req, res) => {
     try {
@@ -45,7 +46,14 @@ export const createSpace = async (req, res) => {
 
   export const getAllSpaces = async (req, res) => {
     try {
-      const space = await SpaceService.getAllSpacesService();
+      let userId;
+      const reqHeader = req.get("Authorization") ?? null;
+      if(reqHeader && reqHeader.split(" ")[0] === "Bearer"){
+        const bearerToken =reqHeader.split(" ")[1];
+        const decodedToken = await verifyAuthToken(bearerToken);
+        userId = decodedToken._id;
+      }
+      const space = await SpaceService.getAllSpacesService(userId || null);
       res.status(200).json({
         success: true,
         message: "Spaces fetched Succesfully",

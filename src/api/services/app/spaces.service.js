@@ -13,6 +13,7 @@ import uploadSingleMedia from "../storage/cloudinary.service.js";
 import Attachment from "../../../database/models/attachments/attachments.js";
 import { deleteInviteCode, validateInviteCode } from "../../utils/inviteCode.utils.js";
 import Links from "../../../database/models/links/links.js";
+import { Types } from "mongoose";
 
 const createSpaceService = async (userReq, userId, req)=>{
     const  {title,inviteCode, links} = userReq;
@@ -52,8 +53,8 @@ const createSpaceService = async (userReq, userId, req)=>{
     
     if(links.length > 0){
         allLinks = links.map(link => ({
-           owner_id : user._id,
-           owner_uuid : user.uuid,
+           owner_id : newSpace._id,
+           owner_uuid : newSpace.uuid,
            type : link.type,
            url : link.url
        }))
@@ -143,7 +144,8 @@ const joinSpaceService = async(spaceId, userId)=>{
 
 
 //
-const getAllSpacesService = async ()=>{
+const getAllSpacesService = async (userId)=>{
+  const id = new Types.ObjectId(userId)
 
   const spaces = await Spaces.aggregate([
     {
@@ -157,6 +159,44 @@ const getAllSpacesService = async ()=>{
     {
       $addFields: {
         spaceMembersCount: { $size: "$spaceMembers" }
+      }
+    },
+    //
+    {
+      $lookup: {
+        from: "space_members",
+        let: { spaceId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$space_id", "$$spaceId"] },
+                  { $eq: ["$user_id", id] },  
+                ]
+              }
+            }
+          }
+        ],
+        as: "isSpaceMember"
+      }
+    },
+    ///
+    {
+      $addFields: {
+        isMember: { $cond: [{ $gt: [{ $size: "$isSpaceMember" }, 0] }, true, false] },      }
+    },
+    {
+      $lookup: {
+        from: "campaigns",
+        localField: "uuid",
+        foreignField: "space_uuid",
+        as: "spaceCampaigns"
+      }
+    },
+    {
+      $addFields: {
+        campaignsCount: { $size: "$spaceCampaigns" }
       }
     },
     {
@@ -211,6 +251,8 @@ const getAllSpacesService = async ()=>{
         attachments: 0,
         spaceMembers : 0,
         creator_id : 0,
+        spaceCampaigns : 0,
+        isSpaceMember: 0,
         _id : 0
       }
     }
@@ -230,6 +272,30 @@ const getASpaceService = async(spaceNameOrId)=>{
               { uuid: spaceNameOrId },
               { title: { $regex: new RegExp(`^${spaceNameOrId}$`, "i") } },
             ],
+          },
+        },
+        {
+          $lookup: {
+            from: "links",
+            let: { ownerUuid: "$uuid" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$owner_uuid", "$$ownerUuid"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  _id: 0,
+                  uuid: 1,
+                  type: 1,
+                  url: 1
+                }
+              }
+            ],
+            as: "links",
           },
         },
         {
@@ -303,6 +369,7 @@ const getASpaceService = async(spaceNameOrId)=>{
         {
           $project: {
             attachments: 0,
+            _id : 0,
           },
         },
       ]);
