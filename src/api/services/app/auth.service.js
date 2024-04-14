@@ -89,11 +89,12 @@ const verifyUserOtpService = async (otp, email, type) => {
   }
   //handle account verification only
   else {
-    await user.updateOne({ isVerified: true });
     isOtp = await OTP.findOneAndDelete({
       otpCode: otp,
+      user_uuid : user.uuid,
     });
     if (!isOtp) throw ErrInvalidOTP;
+    await user.updateOne({ isVerified: true });
   }
 
   const payload = {
