@@ -135,7 +135,7 @@ const walletLogInService = async(walletId)=>{
   let wallet;
 
   wallet = await User.findOne({
-    walletId : walletId,
+    walletId : { $regex: new RegExp(`^${walletId}$`, "i") }, //
   });
 
   if(!wallet){
