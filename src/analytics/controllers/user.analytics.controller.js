@@ -23,3 +23,25 @@ export const getGlobalLeaderShipBoardData = async (req, res) => {
     });
   }
 };
+
+
+/**
+ * @description Get total number of users
+ */
+export const getTotalNumberOfUser = async (req, res) => {
+  try {
+    const allUsers = await UserAnalyticsService.getTotalNumberOfUserService();
+    res.status(200).json({
+      success: true,
+      data: allUsers
+    });
+    return;
+  } catch (error) {
+    console.log(error);
+    const result = getErrorMessage(error);
+    return res.status(result.code).json({
+      success: false,
+      error: result.message,
+    });
+  }
+};

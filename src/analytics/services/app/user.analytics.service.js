@@ -1,5 +1,9 @@
 import Points from "../../../database/models/points/points.js";
+import User from "../../../database/models/user/user.js";
 
+/**
+ * 
+ */
 const getGlobalLeaderShipBoardDataService = async (page)=>{
     const points = await Points.aggregate([
         {
@@ -32,6 +36,17 @@ const getGlobalLeaderShipBoardDataService = async (page)=>{
       return points;
 }
 
+
+/**
+ * 
+ * @returns 
+ */
+const getTotalNumberOfUserService = async()=>{
+  const userTotal = await User.countDocuments();
+  return {totalUsers : userTotal};
+}
+
 export const UserAnalyticsService = {
-    getGlobalLeaderShipBoardDataService
+    getGlobalLeaderShipBoardDataService,
+    getTotalNumberOfUserService
 }
