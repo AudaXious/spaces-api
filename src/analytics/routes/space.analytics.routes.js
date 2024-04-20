@@ -3,6 +3,6 @@ import { getSpaceLeaderShipBoardData } from "../controllers/space.analytics.cont
 
 const routes = Router();
 
-// routes.get("/leaderboard/:spaceId", getSpaceLeaderShipBoardData);
+routes.get("/leaderboard/:spaceId", getSpaceLeaderShipBoardData);
 
 export default routes;
