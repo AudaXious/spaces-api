@@ -9,37 +9,37 @@ const  getSpaceLeaderShipBoardDataService = async(spaceId)=>{
 
     if(!space) throw ErrResourceNotFound;
 
-    // const leaderBoard = await SpacePoints.find({
-    //     space_id : space._id,
-    // }).populate("user_id")
-
-    // return leaderBoard;
-
-    const __id = new Types.ObjectId("6609f6f0d65b46ae84cb318a")
-
     const spacePoints = await SpacePoints.aggregate([
-        { $match: { space_id: __id } },
+        { $match: { space_id: space._id } },
         {
-          $lookup: {
-            from: "usernames",
-            localField: "user_id",
-            foreignField: "user_id",
-            as: "username_info",
-          },
+            $lookup: {
+                from: "usernames",
+                localField: "user_id",
+                foreignField: "user_id",
+                as: "username_info",
+            },
         },
         {
-          $unwind: "$username_info",
+            $unwind: "$username_info",
         },
         {
-          $group: {
-            username: "$username_info.username",
-            totalPoints: { $sum: "$points" },
-          },
+            $group: {
+                _id: "$user_id",
+                username: { $first: "$username_info.username" },
+                totalPoints: { $sum: "$points" },
+            },
         },
         { $sort: { totalPoints: -1 } },
-      ]);
-  
-      return spacePoints;
+        {
+            $project: {
+                _id: 0,
+                username: 1,
+                totalPoints: 1,
+            },
+        },
+    ]);
+      
+    return spacePoints;
 }
 
 
