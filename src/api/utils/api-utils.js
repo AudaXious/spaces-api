@@ -2,6 +2,8 @@
 
 export const validateRequest =
   (schema) => (req, res, next) => {
+    console.log("Request body ===============",req.body);
+
     const { error } = schema.validate(
       req?.body ? req.body : req?.params ? req.params : req.query
     );
