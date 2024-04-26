@@ -90,7 +90,8 @@ const getAllSpacesCampaignService = async(spaceId)=>{
         $addFields: {
           space_title: '$space.title',
           space_uuid: '$space.uuid',
-          isVerified: '$space.isVerified'
+          isVerified: '$space.isVerified',
+          space_id : '$space._id',
         },
       },
       {
@@ -114,6 +115,28 @@ const getAllSpacesCampaignService = async(spaceId)=>{
           iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
         },
       },
+      //
+      //
+      {
+        $lookup: {
+            from: 'attachments',
+            let: { space_id: '$space_id' },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: { $eq: ['$item_id', '$$space_id'] },
+                    },
+                },
+            ],
+            as: 'spaceAttachments',
+        },
+      },
+      {
+        $addFields: {
+            spaceIconUrl: { $ifNull: [{ $arrayElemAt: ['$spaceAttachments.url', 0] }, null] },
+            spaceBannerUrl: { $ifNull: [{ $arrayElemAt: ['$spaceAttachments.url', 1] }, null] },
+        },
+      },
       {
         $project: {
           title: 1,
@@ -124,6 +147,8 @@ const getAllSpacesCampaignService = async(spaceId)=>{
           taskCount: { $size: '$tasks' },
           space_title: 1,
           space_uuid: 1,
+          spaceIconUrl : 1,
+          spaceBannerUrl : 1,
           isVerified : 1,
           tasks: 1, 
           taskParticipantCount: { $size: '$taskParticipants' },
@@ -173,6 +198,7 @@ const getACampaignService = async(campaignId)=>{
         $addFields: {
           space_title: '$space.title',
           space_uuid: '$space.uuid',
+          space_id: '$space._id',
           isVerified: '$space.isVerified'
         },
       },
@@ -197,6 +223,28 @@ const getACampaignService = async(campaignId)=>{
           iconUrl :  { $arrayElemAt: ['$attachments.url', 0] },
         },
       },
+      //
+      {
+        $lookup: {
+            from: 'attachments',
+            let: { space_id: '$space_id' },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: { $eq: ['$item_id', '$$space_id'] },
+                    },
+                },
+            ],
+            as: 'spaceAttachments',
+        },
+    },
+    {
+      $addFields: {
+          spaceIconUrl: { $ifNull: [{ $arrayElemAt: ['$spaceAttachments.url', 0] }, null] },
+          spaceBannerUrl: { $ifNull: [{ $arrayElemAt: ['$spaceAttachments.url', 1] }, null] },
+      },
+    },
+      //
       {
         $project: {
           title: 1,
@@ -207,6 +255,8 @@ const getACampaignService = async(campaignId)=>{
           taskCount: { $size: '$tasks' },
           space_title: 1,
           space_uuid: 1,
+          spaceIconUrl : 1,
+          spaceBannerUrl : 1,
           isVerified : 1,
           tasks: 1,
           taskParticipantCount: { $size: '$taskParticipants' }, 
@@ -253,6 +303,7 @@ const getCampaignsService = async()=>{
           $addFields: {
             space_title: '$space.title',
             space_uuid: '$space.uuid',
+            space_id: '$space._id',
             isVerified: '$space.isVerified'
           },
         },
@@ -278,6 +329,26 @@ const getCampaignsService = async()=>{
           },
         },
         {
+          $lookup: {
+              from: 'attachments',
+              let: { space_id: '$space_id' },
+              pipeline: [
+                  {
+                      $match: {
+                          $expr: { $eq: ['$item_id', '$$space_id'] },
+                      },
+                  },
+              ],
+              as: 'spaceAttachments',
+          },
+        },
+        {
+          $addFields: {
+              spaceIconUrl: { $ifNull: [{ $arrayElemAt: ['$spaceAttachments.url', 0] }, null] },
+              spaceBannerUrl: { $ifNull: [{ $arrayElemAt: ['$spaceAttachments.url', 1] }, null] },
+          },
+        },
+        {
           $project: {
             title: 1,
             description: 1,
@@ -287,6 +358,8 @@ const getCampaignsService = async()=>{
             taskCount: { $size: '$tasks' },
             space_title: 1,
             space_uuid: 1,
+            spaceIconUrl : 1,
+            spaceBannerUrl : 1,
             isVerified : 1,
             tasks: 1, 
             taskParticipantCount: { $size: '$taskParticipants' },

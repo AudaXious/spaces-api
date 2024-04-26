@@ -59,7 +59,11 @@ const createUserOrLoginAccountService = async (userReq) => {
     user_id : user._id
   });
 
-  return {...user.toJSON(), username : username !== null ? username.username : null};
+  return {
+    ...user.toJSON(), 
+    username : username !== null ? username.username : null,
+    twitterUsername : username !== null ? username.twitterUsername : null,
+  };
 };
 
 /**
@@ -161,7 +165,13 @@ const walletLogInService = async(walletId)=>{
     user_id : wallet._id
   });
 
-  return {...wallet.toJSON(), username : username ? username.username : null,token}
+  return {
+    ...wallet.toJSON(), 
+    username : username ? username.username : null,
+    token,
+    twitterUsername : username !== null ? username.twitterUsername : null,
+
+  }
 }
 
 

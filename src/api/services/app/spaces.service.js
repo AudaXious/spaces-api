@@ -318,6 +318,24 @@ const getASpaceService = async(spaceNameOrId)=>{
         },
         {
           $lookup: {
+            from: "campaigns",
+            localField: "uuid",
+            foreignField: "space_uuid",
+            as: "spaceCampaigns",
+          },
+        },
+        {
+          $addFields: {
+            campaignsCount: { $size: "$spaceCampaigns" },
+          },
+        },
+        {
+          $project: {
+            spaceCampaigns: 0,
+          },
+        },
+        {
+          $lookup: {
             from: "attachments",
             let: { item_id: "$_id" },
             pipeline: [
