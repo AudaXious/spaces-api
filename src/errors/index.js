@@ -11,6 +11,7 @@ export const ErrInvalidInviteCode = new Error("Invalid invite code");
 export const ErrMissingKeyFields = new Error("Missing Key Fields");
 export const ErrMissingHeader = new Error("Missing request header")
 export const ErrInvalidDateSelection = new Error("Date selection is not valid")
+export const ErrCampaignHasEnded = new Error("Campaign has ended")
 
 //409
 export const ErrEmailAlreadyExists = new Error("Email already exists");
@@ -74,6 +75,7 @@ export const getErrorMessage = (error) => {
         case ErrMissingKeyFields:
         case ErrMissingHeader:
         case ErrInvalidDateSelection:
+        case ErrCampaignHasEnded:
             code = 406;
             break;
 

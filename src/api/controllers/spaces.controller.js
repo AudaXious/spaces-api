@@ -72,8 +72,15 @@ export const createSpace = async (req, res) => {
 
   export const getASpace = async (req, res) => {
     try {
+      let userId;
+      const reqHeader = req.get("Authorization") ?? null;
+      if(reqHeader && reqHeader.split(" ")[0] === "Bearer"){
+        const bearerToken =reqHeader.split(" ")[1];
+        const decodedToken = await verifyAuthToken(bearerToken);
+        userId = decodedToken._id;
+      }
       const {spaceNameOrId} = req.params;
-      const space = await SpaceService.getASpaceService(spaceNameOrId);
+      const space = await SpaceService.getASpaceService(spaceNameOrId, userId);
       res.status(200).json({
         success: true,
         message: "Space fetched Succesfully",

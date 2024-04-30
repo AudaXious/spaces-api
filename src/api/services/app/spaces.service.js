@@ -264,7 +264,9 @@ const getAllSpacesService = async (userId)=>{
 
 
 //
-const getASpaceService = async(spaceNameOrId)=>{
+const getASpaceService = async(spaceNameOrId, userId)=>{
+    const id = new Types.ObjectId(userId)
+    //
     const space = await Spaces.aggregate([
         {
           $match: {
@@ -297,6 +299,30 @@ const getASpaceService = async(spaceNameOrId)=>{
             ],
             as: "links",
           },
+        },
+        {
+          $lookup: {
+            from: "space_members",
+            let: { spaceId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$space_id", "$$spaceId"] },
+                      { $eq: ["$user_id", id] },  
+                    ]
+                  }
+                }
+              }
+            ],
+            as: "isSpaceMember"
+          }
+        },
+        ///
+        {
+          $addFields: {
+            isMember: { $cond: [{ $gt: [{ $size: "$isSpaceMember" }, 0] }, true, false] },      }
         },
         {
           $lookup: {
@@ -388,6 +414,7 @@ const getASpaceService = async(spaceNameOrId)=>{
           $project: {
             attachments: 0,
             _id : 0,
+            isSpaceMember : 0
           },
         },
       ]);
